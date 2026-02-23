@@ -1,0 +1,60 @@
+﻿<Window
+    x:Class="AsyncFileDownloader.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:AsyncFileDownloader"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:resx="clr-namespace:AsyncFileDownloader.Properties"
+    Title="MainWindow"
+    Width="800"
+    Height="450"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <Color x:Key="PointColor">#83B8FF</Color>
+        <SolidColorBrush x:Key="PointBrush" Color="{StaticResource PointColor}" />
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel
+            x:Name="MainContainer"
+            Grid.Row="0"
+            Margin="10">
+            <StackPanel>
+                <TextBox Margin="0,5" Text="{Binding HttpRequestUrl1}" />
+                <TextBox Margin="0,5" Text="{Binding HttpRequestUrl2}" />
+                <TextBox Margin="0,5" Text="{Binding HttpRequestUrl3}" />
+            </StackPanel>
+
+
+        </StackPanel>
+
+        <StackPanel
+            Grid.Row="1"
+            Margin="0,10"
+            HorizontalAlignment="Center"
+            Orientation="Horizontal">
+            <Button
+                Width="150"
+                Height="30"
+                Margin="0,0,10,0"
+                Content="{x:Static resx:Strings.download_all}" />
+            <Button
+                Width="150"
+                Height="30"
+                Content="{x:Static resx:Strings.cancel}" />
+        </StackPanel>
+
+        <TextBlock
+            Grid.Row="2"
+            Background="{StaticResource PointBrush}"
+            Text="{Binding StatusMessage}" />
+    </Grid>
+</Window>
