@@ -117,11 +117,29 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="all_files" xml:space="preserve">
+    <value>모든 파일 (*.*)|*.*</value>
+  </data>
   <data name="cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="cancel_download" xml:space="preserve">
+    <value>다운로드 취소</value>
+  </data>
   <data name="download_all" xml:space="preserve">
     <value>Download All</value>
+  </data>
+  <data name="download_finished" xml:space="preserve">
+    <value>모든 다운로드가 완료되었습니다! </value>
+  </data>
+  <data name="download_ongoing" xml:space="preserve">
+    <value>다은로드 중</value>
+  </data>
+  <data name="download_result" xml:space="preserve">
+    <value>DownloadResult</value>
+  </data>
+  <data name="select_file_location" xml:space="preserve">
+    <value>파일 저장 위치 선택</value>
   </data>
   <data name="url1" xml:space="preserve">
     <value>https://ash-speed.hetzner.com/100MB.bin</value>

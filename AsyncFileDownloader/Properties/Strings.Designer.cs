@@ -61,6 +61,15 @@ namespace AsyncFileDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 모든 파일 (*.*)|*.*.
+        /// </summary>
+        public static string all_files {
+            get {
+                return ResourceManager.GetString("all_files", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string cancel {
@@ -70,11 +79,56 @@ namespace AsyncFileDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 다운로드 취소.
+        /// </summary>
+        public static string cancel_download {
+            get {
+                return ResourceManager.GetString("cancel_download", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Download All.
         /// </summary>
         public static string download_all {
             get {
                 return ResourceManager.GetString("download_all", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 모든 다운로드가 완료되었습니다! .
+        /// </summary>
+        public static string download_finished {
+            get {
+                return ResourceManager.GetString("download_finished", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 다은로드 중.
+        /// </summary>
+        public static string download_ongoing {
+            get {
+                return ResourceManager.GetString("download_ongoing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DownloadResult.
+        /// </summary>
+        public static string download_result {
+            get {
+                return ResourceManager.GetString("download_result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 파일 저장 위치 선택.
+        /// </summary>
+        public static string select_file_location {
+            get {
+                return ResourceManager.GetString("select_file_location", resourceCulture);
             }
         }
         

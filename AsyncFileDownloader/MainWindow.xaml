@@ -7,13 +7,31 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:resx="clr-namespace:AsyncFileDownloader.Properties"
     Title="MainWindow"
-    Width="800"
+    Width="900"
     Height="500"
     mc:Ignorable="d">
 
     <Window.Resources>
         <Color x:Key="PointColor">#83B8FF</Color>
         <SolidColorBrush x:Key="PointBrush" Color="{StaticResource PointColor}" />
+
+        <Style x:Key="DownloadSectionBorderStyle" TargetType="Border">
+            <Setter Property="Margin" Value="10" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="#DDDDDD" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect
+                        BlurRadius="5"
+                        Opacity="0.1"
+                        ShadowDepth="1"
+                        Color="Black" />
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="DownloadSectionStyle" TargetType="StackPanel">
             <Setter Property="Margin" Value="10" />
         </Style>
@@ -49,49 +67,51 @@
         </Grid.RowDefinitions>
 
         <!--  동일한 스타일 적용할 수 있을 듯 Resource 써서  -->
-        <StackPanel
-            x:Name="MainContainer"
-            Grid.Row="0"
-            Margin="8">
-            <StackPanel Style="{StaticResource DownloadSectionStyle}">
-                <TextBlock Style="{StaticResource HeaderLabelStyle}" Text="Link 1" />
-                <TextBox Text="{Binding HttpRequestUrl1}" />
-                <Grid>
-                    <ProgressBar Value="{Binding HttpRequestProgress1, Mode=OneWay}" />
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Text="{Binding HttpRequestProgress1, StringFormat={}{0:F1}%}" />
-                </Grid>
-                <TextBlock Style="{StaticResource ByteInfoStyle}" Text="{Binding FileSizeUrl1, StringFormat={}{0:#,0} Byte(s)}" />
-            </StackPanel>
+        <Border Style="{StaticResource DownloadSectionBorderStyle}">
+            <StackPanel
+                x:Name="MainContainer"
+                Grid.Row="0"
+                Margin="8">
+                <StackPanel Style="{StaticResource DownloadSectionStyle}">
+                    <TextBlock Style="{StaticResource HeaderLabelStyle}" Text="Link 1" />
+                    <TextBox Text="{Binding HttpRequestUrl1}" />
+                    <Grid>
+                        <ProgressBar Value="{Binding HttpRequestProgress1, Mode=OneWay}" />
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Text="{Binding HttpRequestProgress1, StringFormat={}{0:F1}%}" />
+                    </Grid>
+                    <TextBlock Style="{StaticResource ByteInfoStyle}" Text="{Binding FileSizeUrl1, StringFormat=Total: {0:#,0} Byte(s)}" />
+                </StackPanel>
 
-            <StackPanel Style="{StaticResource DownloadSectionStyle}">
-                <TextBlock Style="{StaticResource HeaderLabelStyle}" Text="Link 2" />
-                <TextBox Text="{Binding HttpRequestUrl2}" />
-                <Grid>
-                    <ProgressBar Value="{Binding HttpRequestProgress2, Mode=OneWay}" />
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Text="{Binding HttpRequestProgress2, StringFormat={}{0:F1}%}" />
-                </Grid>
-                <TextBlock Style="{StaticResource ByteInfoStyle}" Text="{Binding FileSizeUrl2, StringFormat={}{0:#,0} Byte(s)}" />
-            </StackPanel>
+                <StackPanel Style="{StaticResource DownloadSectionStyle}">
+                    <TextBlock Style="{StaticResource HeaderLabelStyle}" Text="Link 2" />
+                    <TextBox Text="{Binding HttpRequestUrl2}" />
+                    <Grid>
+                        <ProgressBar Value="{Binding HttpRequestProgress2, Mode=OneWay}" />
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Text="{Binding HttpRequestProgress2, StringFormat={}{0:F1}%}" />
+                    </Grid>
+                    <TextBlock Style="{StaticResource ByteInfoStyle}" Text="{Binding FileSizeUrl2, StringFormat=Total: {0:#,0} Byte(s)}" />
+                </StackPanel>
 
-            <StackPanel Style="{StaticResource DownloadSectionStyle}">
-                <TextBlock Style="{StaticResource HeaderLabelStyle}" Text="Link 3" />
-                <TextBox Text="{Binding HttpRequestUrl3}" />
-                <Grid>
-                    <ProgressBar Value="{Binding HttpRequestProgress3, Mode=OneWay}" />
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Text="{Binding HttpRequestProgress3, StringFormat={}{0:F1}%}" />
-                </Grid>
-                <TextBlock Style="{StaticResource ByteInfoStyle}" Text="{Binding FileSizeUrl3, StringFormat={}{0:#,0} Byte(s)}" />
+                <StackPanel Style="{StaticResource DownloadSectionStyle}">
+                    <TextBlock Style="{StaticResource HeaderLabelStyle}" Text="Link 3" />
+                    <TextBox Text="{Binding HttpRequestUrl3}" />
+                    <Grid>
+                        <ProgressBar Value="{Binding HttpRequestProgress3, Mode=OneWay}" />
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Text="{Binding HttpRequestProgress3, StringFormat={}{0:F1}%}" />
+                    </Grid>
+                    <TextBlock Style="{StaticResource ByteInfoStyle}" Text="{Binding FileSizeUrl3, StringFormat=Total: {0:#,0} Byte(s)}" />
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
+        </Border>
 
         <StackPanel
             Grid.Row="1"

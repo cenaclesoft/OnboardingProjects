@@ -26,7 +26,7 @@ namespace AsyncFileDownloader.ViewModel
             StatusMessage = "";
 
             // 2. Command 초기화
-            DownloadAllCommand = new RelayCommandAsync(OnDownloadAll, CanDownloadAll);
+            DownloadAllCommand = new RelayCommandAsync(OnDownloadAllAsync, CanDownloadAll);
             CancelCommand = new RelayCommand(OnCancel, CanCancel);
         }
         #endregion
@@ -102,19 +102,48 @@ namespace AsyncFileDownloader.ViewModel
         }
         #endregion
 
+        #region Commands
+        public ICommand DownloadAllCommand { get; set; }
+        private async Task OnDownloadAllAsync()
+        {
+            await SaveFileAsync(null);
+        }
+
+        private bool CanDownloadAll()
+        {
+            if (string.IsNullOrWhiteSpace(HttpRequestUrl1) || string.IsNullOrWhiteSpace(HttpRequestUrl2) || string.IsNullOrWhiteSpace(HttpRequestUrl3))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public ICommand CancelCommand { get; set; }
+        private void OnCancel()
+        {
+            _cts?.Cancel();
+            CleanUpDownloadStatus();
+        }
+
+        private bool CanCancel(object parameter)
+        {
+            return true;
+        }
+        #endregion
+
         #region Helpers
         private static HttpClient _httpClient = new HttpClient();
 
         private CancellationTokenSource _cts;
 
-        // TODO : 현재 하드코딩된 String 리소스 관리해야됨
-        private async void SaveFile(object parameter)
+        private async Task SaveFileAsync(object parameter)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
 
-            saveFileDialog.Title = "파일 저장 위치 선택";
-            saveFileDialog.Filter = "모든 파일 (*.*)|*.*"; // 파일 필터
-            saveFileDialog.FileName = "DownloadResult"; // 기본 파일 이름인데 여기에 인덱스 붙혀서 파일저장
+            saveFileDialog.Title = Strings.select_file_location;
+            saveFileDialog.Filter = Strings.all_files;
+            saveFileDialog.FileName = Strings.download_result; // 기본 파일 이름인데 여기에 인덱스 붙혀서 파일저장
 
             if (saveFileDialog.ShowDialog() == false)
             {
@@ -122,10 +151,12 @@ namespace AsyncFileDownloader.ViewModel
             }
 
             string baseFilePath = saveFileDialog.FileName;
-            StatusMessage = "다운로드 중";
+            StatusMessage = Strings.download_ongoing;
 
             try
             {
+                DateTime startTime = DateTime.Now; // 시간 측정 시작 --------------
+
                 var downloadTasks = new List<Task>();
                 var urls = new[] { HttpRequestUrl1, HttpRequestUrl2, HttpRequestUrl3 };
 
@@ -135,14 +166,19 @@ namespace AsyncFileDownloader.ViewModel
                     DownloadWithProgressAsync(url, $"{baseFilePath}_{index + 1}{Path.GetExtension(url)}", index, _cts.Token)));
 
                 await Task.WhenAll(downloadTasks);
-                _cts.Dispose();
-                _cts = null;
+                
+                DateTime endTime = DateTime.Now; // 시간 측정 끝 ------------------
 
-                StatusMessage = "모든 다운로드가 완료되었습니다!";
+                StatusMessage = StatusMessage = $"{Strings.download_finished} {(endTime - startTime).TotalSeconds:F1}(초)"; ;
             }
             catch (Exception ex)
             {
                 StatusMessage = $"오류 발생: {ex.Message}";
+            }
+            finally
+            {
+                _cts?.Dispose();
+                _cts = null;
             }
         }
 
@@ -171,9 +207,6 @@ namespace AsyncFileDownloader.ViewModel
 
                         if (totalBytes != -1)
                         {
-                            // TODO : 여기 좀 이상? 
-                            // 배열로 바꿀 수 있는데 배열 Binding 어떻게 하는지 모르겠음.
-                            // SetProperty 하나 바뀌면 event로 상위 프로퍼티에 전파시켜야 할 것 같은데 일단 TODO
                             double progress = (double)totalReadBytes / totalBytes * 100;
 
                             if (index == 0) HttpRequestProgress1 = progress;
@@ -195,39 +228,10 @@ namespace AsyncFileDownloader.ViewModel
             FileSizeUrl1 = 0;
             FileSizeUrl2 = 0;
             FileSizeUrl3 = 0;
+
+            StatusMessage = Strings.cancel_download;
         }
         #endregion
-
-        #region Commands
-        public ICommand DownloadAllCommand { get; set; }
-        private async Task OnDownloadAll()
-        {
-            SaveFile(null);
-        }
-
-        private bool CanDownloadAll()
-        {
-            if (string.IsNullOrWhiteSpace(HttpRequestUrl1) ||
-                string.IsNullOrWhiteSpace(HttpRequestUrl2) ||
-                string.IsNullOrWhiteSpace(HttpRequestUrl3))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public ICommand CancelCommand { get; set; }
-        private void OnCancel()
-        {
-            _cts?.Cancel();
-            CleanUpDownloadStatus();
-        }
-
-        private bool CanCancel(object parameter)
-        {
-            return true;
-        }
-        #endregion
+        
     }
 }

@@ -48,27 +48,30 @@ async/await 동작 원리, Delegate/Event, Value Type vs Reference Type을 실�
 ## 3. 이론 정리 (실습과 연결)
 아래 항목을 실습 코드와 결과를 근거로 정리합니다.
 
-1. async/await 동작 원리
-다운로드 버튼 클릭 → await HttpClient.GetAsync() 호출 시점에 실행 흐름이 어떻게 되는지 단계별 서술
+- async/await 동작 원리  
+다운로드 버튼 클릭 → await HttpClient.GetAsync() 호출 시점에 실행 흐름이 어떻게 되는지 단계별 서술  
+```
+[UI Thread] Button Click
+    → OnDownloadAll()         ← UI Thread에서 호출
+        → SaveFile(null)      ← UI Thread에서 호출
+            → await Task.WhenAll(downloadTasks)
+                              ↑ 여기서 SynchronizationContext 캡쳐
+            → 이후 UI Thread에서 프로퍼티 업데이트하기 때문에 Blocking 없음
+```
+- Value Type vs Reference Type  
+다운로드 진행률을 int percent (Value Type)으로 전달할 때와 DownloadProgress 클래스 (Reference Type)로 전달할 때 차이를 코드로 비교  
+=> 본 프로젝트에서는 진행률 콜백을 구현하기 위해 해당 방법을 사용하지 않고 MVVM 패턴을 통해 Binding으로 구현
 
-"await 이후 코드는 누가, 언제 실행하는가?" — SynchronizationContext와 연결하여 설명
+- 청크 읽기 루프에서 byte[] buffer가 힙에 할당되는 이유  
+=> C#에서는 `new Array[]`를 참조형식으로 힙에 저장함.
 
-다운로드 중 TextBox에 타이핑이 가능한 이유를 위 원리로 설명
+- Delegate / Event / Lambda  
+=> 본 프로젝트에서는 진행률 콜백을 구현하기 위해 해당 방법을 사용하지 않고, Binding Property를 통하여 즉시 반영한다.
 
-2. Value Type vs Reference Type
-다운로드 진행률을 int percent (Value Type)으로 전달할 때와 DownloadProgress 클래스 (Reference Type)로 전달할 때 차이를 코드로 비교
+- CancellationToken 동작 원리  
+취소 버튼 클릭 → `CancellationTokenSource.Cancel()` → 다운로드 루프 중단까지의 과정 추적  
+=> 1. 취소버튼 클릭 -> 2. Command로 바인딩 된 `CancelCommand.Invoke` -> 3. `CancelCommand`에 등록된 콜백함수(`OnCancel()`) 실행 -> 4. 토큰값을 캔슬로 변경, 다운로드 상태 초기화(클린업) -> 5. 이후 `contentStream.ReadAsync` 루프에서 cts 취소 토큰과 함께 리퀘스트시 루프 탈출
 
-청크 읽기 루프에서 byte[] buffer가 힙에 할당되는 이유
-
-3. Delegate / Event / Lambda
-위에서 구현한 진행률 콜백 3가지 방식(A, B, C)의 차이점 정리
-
-Delegate → Event → Lambda → Func/Action으로 이어지는 흐름 설명
-
-4. CancellationToken 동작 원리
-취소 버튼 클릭 → CancellationTokenSource.Cancel() → 다운로드 루프 중단까지의 과정 추적
-
-OperationCanceledException은 어디서 발생하고 어떻게 잡아야 하는지 정리
 
 ### 확인 포인트
 - [ ] 일부러 Task.Run 안에서 ProgressBar.Value를 직접 건드려보고 예외 확인 → 왜 터지는지 정리
