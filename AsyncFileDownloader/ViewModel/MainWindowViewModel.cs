@@ -17,6 +17,7 @@ namespace AsyncFileDownloader.ViewModel
     public class MainWindowViewModel : ViewModelBase
     {
         #region Constructor
+
         public MainWindowViewModel()
         {
             // 1. Binding Properties 초기값 설정
@@ -31,79 +32,107 @@ namespace AsyncFileDownloader.ViewModel
         }
         #endregion
 
+
         #region Binding Properties
+
         private string _httpRequestUrl1;
+        
         public string HttpRequestUrl1
         {
             get => _httpRequestUrl1;
             set => SetProperty<string>(ref _httpRequestUrl1, value);
         }
 
+
         private string _httpRequestUrl2;
+
         public string HttpRequestUrl2
         {
             get => _httpRequestUrl2;
             set => SetProperty<string>(ref _httpRequestUrl2, value);
         }
 
+
         private string _httpRequestUrl3;
+
         public string HttpRequestUrl3
         {
             get => _httpRequestUrl3;
             set => SetProperty<string>(ref _httpRequestUrl3, value);
         }
 
+
         private double _httpRequestProgress1;
+
         public double HttpRequestProgress1
         {
             get => _httpRequestProgress1;
             private set => SetProperty(ref _httpRequestProgress1, value);
         }
 
+
         private double _httpRequestProgress2;
+        
         public double HttpRequestProgress2
         {
             get => _httpRequestProgress2;
             private set => SetProperty(ref _httpRequestProgress2, value);
         }
 
+
         private double _httpRequestProgress3;
+        
         public double HttpRequestProgress3
         {
             get => _httpRequestProgress3;
             private set => SetProperty(ref _httpRequestProgress3, value);
         }
 
+
+        
         private double _fileSizeUrl1;
+        
         public double FileSizeUrl1
         {
-            get => _httpRequestProgress1;
+            get => _fileSizeUrl1;
             private set => SetProperty(ref _httpRequestProgress1, value);
         }
 
+
+        
         private double _fileSizeUrl2;
+        
         public double FileSizeUrl2
         {
             get => _fileSizeUrl2;
             private set => SetProperty(ref _fileSizeUrl2, value);
         }
+        
+        
         private double _fileSizeUrl3;
+        
         public double FileSizeUrl3
         {
             get => _fileSizeUrl3;
             private set => SetProperty(ref _fileSizeUrl3, value);
         }
 
+
         private string _statusMessage;
+        
         public string StatusMessage
         {
             get { return _statusMessage; }
             private set => SetProperty<string>(ref _statusMessage, value);
         }
+        
         #endregion
 
+
         #region Commands
+
         public ICommand DownloadAllCommand { get; set; }
+
         private async Task OnDownloadAllAsync()
         {
             await SaveFileAsync(null);
@@ -120,6 +149,7 @@ namespace AsyncFileDownloader.ViewModel
         }
 
         public ICommand CancelCommand { get; set; }
+
         private void OnCancel()
         {
             _cts?.Cancel();
@@ -130,7 +160,9 @@ namespace AsyncFileDownloader.ViewModel
         {
             return true;
         }
+
         #endregion
+
 
         #region Helpers
         private static HttpClient _httpClient = new HttpClient();
@@ -202,6 +234,8 @@ namespace AsyncFileDownloader.ViewModel
 
                     while ((readBytes = await contentStream.ReadAsync(buffer, 0, buffer.Length, token)) > 0)
                     {
+                        token.ThrowIfCancellationRequested();
+
                         await fileStream.WriteAsync(buffer, 0, readBytes, token);
                         totalReadBytes += readBytes;
 
@@ -213,22 +247,23 @@ namespace AsyncFileDownloader.ViewModel
                             else if (index == 1) HttpRequestProgress2 = progress;
                             else if (index == 2) HttpRequestProgress3 = progress;
                         }
-
-                        token.ThrowIfCancellationRequested();
                     }
                 }
             }
         }
         private void CleanUpDownloadStatus()
         {
+            // 진행도 초기화
             HttpRequestProgress1 = 0;
             HttpRequestProgress2 = 0;
             HttpRequestProgress3 = 0;
 
+            // 파일 사이즈 초기화
             FileSizeUrl1 = 0;
             FileSizeUrl2 = 0;
             FileSizeUrl3 = 0;
 
+            // 상태메시지 (다운로드 취소)
             StatusMessage = Strings.cancel_download;
         }
         #endregion

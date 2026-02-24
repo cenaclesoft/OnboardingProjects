@@ -78,8 +78,15 @@ async/await 동작 원리, Delegate/Event, Value Type vs Reference Type을 실�
 
 - [ ] await를 빼고 .Result로 바꿔보고 UI가 멈추는 것 확인 → 왜 멈추는지 데드락 원리와 함께 설명
 
-
-## 4. 설계
-
-- async file downloader에 필요한 윈도우 1개
-- 버튼 2개(Download all, Cancel)
+### TODO
+- [ ] Linting (Life 4 참조)
+- [ ] Task.Run()
+- [ ] RelayCommand 수정
+- [ ] HttpClient 따로 파일 분리 (static 함수로 만들었으면 좋겠다. Download 함수)
+- [ ] View Items로 바꿔서 중복 제거
+- [ ] ViewModel Base [] <- ?
+- [ ] 에러 어디서 터지는지 try-catch 확인 <- Debug - Windows - Immediate ...
+- [ ] CanExecute null check
+- [ ] Why CommandManager?
+- [ ] RaiseCanExecuteChanged
+- [ ] 

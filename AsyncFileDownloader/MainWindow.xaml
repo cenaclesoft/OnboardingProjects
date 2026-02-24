@@ -66,12 +66,8 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!--  동일한 스타일 적용할 수 있을 듯 Resource 써서  -->
         <Border Style="{StaticResource DownloadSectionBorderStyle}">
-            <StackPanel
-                x:Name="MainContainer"
-                Grid.Row="0"
-                Margin="8">
+            <StackPanel Grid.Row="0" Margin="8">
                 <StackPanel Style="{StaticResource DownloadSectionStyle}">
                     <TextBlock Style="{StaticResource HeaderLabelStyle}" Text="Link 1" />
                     <TextBox Text="{Binding HttpRequestUrl1}" />
