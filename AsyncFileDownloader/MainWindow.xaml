@@ -45,10 +45,12 @@
                 Width="150"
                 Height="30"
                 Margin="0,0,10,0"
+                Command="{Binding DownloadAllCommand}"
                 Content="{x:Static resx:Strings.download_all}" />
             <Button
                 Width="150"
                 Height="30"
+                Command="{Binding CancelCommand}"
                 Content="{x:Static resx:Strings.cancel}" />
         </StackPanel>
 
