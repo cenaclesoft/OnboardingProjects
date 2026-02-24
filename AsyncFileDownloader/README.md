@@ -14,11 +14,10 @@ async/await 동작 원리, Delegate/Event, Value Type vs Reference Type을 실�
 - 하단 StatusBar에 상태 메시지 표시
 
 - 테스트용 URL
-	- > https://ash-speed.hetzner.com/100MB.bin
-
-	- > https://speed.cloudflare.com/100mb.test
-
-	- > https://proof.ovh.net/files/100Mb.dat
+	- > [*] https://speed.cloudflare.com/100mb.test (작동안함 : 404)
+	- > [1] https://ash-speed.hetzner.com/100MB.bin
+	- > [2] http://xcal1.vodafone.co.uk/100MB.zip (대체 링크 구함)
+	- > [3] https://proof.ovh.net/files/100Mb.dat
 
 ### 2-2. 기능 요건
 

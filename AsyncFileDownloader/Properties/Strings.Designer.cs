@@ -88,7 +88,7 @@ namespace AsyncFileDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://speed.cloudflare.com/100mb.test.
+        ///   Looks up a localized string similar to http://xcal1.vodafone.co.uk/100MB.zip.
         /// </summary>
         public static string url2 {
             get {
