@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helper\DownloadItem.cs" />
     <Compile Include="Helper\RelayCommand.cs" />
     <Compile Include="Helper\RelayCommandAsync.cs" />
     <Compile Include="Manager\HttpClient.cs" />

@@ -1,13 +1,16 @@
 ﻿using AsyncFileDownloader.Helper;
+using AsyncFileDownloader.Manager;
 using AsyncFileDownloader.Properties;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -21,10 +24,12 @@ namespace AsyncFileDownloader.ViewModel
         public MainWindowViewModel()
         {
             // 1. Binding Properties 초기값 설정
-            HttpRequestUrl1 = Strings.url1;
-            HttpRequestUrl2 = Strings.url2;
-            HttpRequestUrl3 = Strings.url3;
-            StatusMessage = "";
+            DownloadItems = new ObservableCollection<DownloadItem>
+            {
+                new DownloadItem { Url = Strings.url1 },
+                new DownloadItem { Url = Strings.url2 },
+                new DownloadItem { Url = Strings.url3 }
+            };
 
             // 2. Command 초기화
             DownloadAllCommand = new RelayCommandAsync(OnDownloadAllAsync, CanDownloadAll);
@@ -35,97 +40,16 @@ namespace AsyncFileDownloader.ViewModel
 
         #region Binding Properties
 
-        private string _httpRequestUrl1;
-        
-        public string HttpRequestUrl1
-        {
-            get => _httpRequestUrl1;
-            set => SetProperty<string>(ref _httpRequestUrl1, value);
-        }
-
-
-        private string _httpRequestUrl2;
-
-        public string HttpRequestUrl2
-        {
-            get => _httpRequestUrl2;
-            set => SetProperty<string>(ref _httpRequestUrl2, value);
-        }
-
-
-        private string _httpRequestUrl3;
-
-        public string HttpRequestUrl3
-        {
-            get => _httpRequestUrl3;
-            set => SetProperty<string>(ref _httpRequestUrl3, value);
-        }
-
-
-        private double _httpRequestProgress1;
-
-        public double HttpRequestProgress1
-        {
-            get => _httpRequestProgress1;
-            private set => SetProperty(ref _httpRequestProgress1, value);
-        }
-
-
-        private double _httpRequestProgress2;
-        
-        public double HttpRequestProgress2
-        {
-            get => _httpRequestProgress2;
-            private set => SetProperty(ref _httpRequestProgress2, value);
-        }
-
-
-        private double _httpRequestProgress3;
-        
-        public double HttpRequestProgress3
-        {
-            get => _httpRequestProgress3;
-            private set => SetProperty(ref _httpRequestProgress3, value);
-        }
-
-
-        
-        private double _fileSizeUrl1;
-        
-        public double FileSizeUrl1
-        {
-            get => _fileSizeUrl1;
-            private set => SetProperty(ref _httpRequestProgress1, value);
-        }
-
-
-        
-        private double _fileSizeUrl2;
-        
-        public double FileSizeUrl2
-        {
-            get => _fileSizeUrl2;
-            private set => SetProperty(ref _fileSizeUrl2, value);
-        }
-        
-        
-        private double _fileSizeUrl3;
-        
-        public double FileSizeUrl3
-        {
-            get => _fileSizeUrl3;
-            private set => SetProperty(ref _fileSizeUrl3, value);
-        }
-
+        public ObservableCollection<DownloadItem> DownloadItems { get; }
 
         private string _statusMessage;
-        
+
         public string StatusMessage
         {
             get { return _statusMessage; }
             private set => SetProperty<string>(ref _statusMessage, value);
         }
-        
+
         #endregion
 
 
@@ -135,23 +59,57 @@ namespace AsyncFileDownloader.ViewModel
 
         private async Task OnDownloadAllAsync()
         {
-            await SaveFileAsync(null);
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+
+            saveFileDialog.Title = Strings.select_file_location;
+            saveFileDialog.Filter = Strings.all_files;
+            saveFileDialog.FileName = Strings.download_result;
+
+            if (saveFileDialog.ShowDialog() == false)
+            {
+                return;
+            }
+
+            string baseFilePath = saveFileDialog.FileName;
+            StatusMessage = Strings.download_ongoing;
+
+            var urls = new[] { Strings.url1, Strings.url2, Strings.url3 };
+
+            _cts = new CancellationTokenSource();
+
+            DateTime startTime = DateTime.Now;
+
+            var downloadTasks = new List<Task>();
+
+            for (int i = 0; i < urls.Length; i++)
+            {
+                if (string.IsNullOrWhiteSpace(urls[i])) continue;
+                downloadTasks.Add(
+                    FileDownloadManager.DownloadAsync(urls[i], $"{baseFilePath}_{i + 1}...", _cts.Token, DownloadItems[i].ProgressHandler));
+            }
+
+            await Task.WhenAll(downloadTasks);
+
+            DateTime endTime = DateTime.Now;
+
+            StatusMessage = StatusMessage = $"{Strings.download_finished} {(endTime - startTime).TotalSeconds:F1}(초)"; ;
+
+            _cts?.Dispose();
+            _cts = null;
         }
 
         private bool CanDownloadAll()
         {
-            if (string.IsNullOrWhiteSpace(HttpRequestUrl1) || string.IsNullOrWhiteSpace(HttpRequestUrl2) || string.IsNullOrWhiteSpace(HttpRequestUrl3))
-            {
-                return false;
-            }
-
+            // TODO: 다운로드 중일때는 잠궈
             return true;
         }
 
+        // TODO: 참조 걸리게 하는거 오름차트 참조
         public ICommand CancelCommand { get; set; }
 
         private void OnCancel()
         {
+            // TODO: 현재 Cancel 클릭 시 오류 발생
             _cts?.Cancel();
             CleanUpDownloadStatus();
         }
@@ -165,108 +123,23 @@ namespace AsyncFileDownloader.ViewModel
 
 
         #region Helpers
-        private static HttpClient _httpClient = new HttpClient();
 
         private CancellationTokenSource _cts;
 
-        private async Task SaveFileAsync(object parameter)
-        {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
 
-            saveFileDialog.Title = Strings.select_file_location;
-            saveFileDialog.Filter = Strings.all_files;
-            saveFileDialog.FileName = Strings.download_result; // 기본 파일 이름인데 여기에 인덱스 붙혀서 파일저장
-
-            if (saveFileDialog.ShowDialog() == false)
-            {
-                return;
-            }
-
-            string baseFilePath = saveFileDialog.FileName;
-            StatusMessage = Strings.download_ongoing;
-
-            try
-            {
-                DateTime startTime = DateTime.Now; // 시간 측정 시작 --------------
-
-                var downloadTasks = new List<Task>();
-                var urls = new[] { HttpRequestUrl1, HttpRequestUrl2, HttpRequestUrl3 };
-
-                _cts = new CancellationTokenSource();
-
-                downloadTasks.AddRange(urls.Select((url, index) =>
-                    DownloadWithProgressAsync(url, $"{baseFilePath}_{index + 1}{Path.GetExtension(url)}", index, _cts.Token)));
-
-                await Task.WhenAll(downloadTasks);
-                
-                DateTime endTime = DateTime.Now; // 시간 측정 끝 ------------------
-
-                StatusMessage = StatusMessage = $"{Strings.download_finished} {(endTime - startTime).TotalSeconds:F1}(초)"; ;
-            }
-            catch (Exception ex)
-            {
-                StatusMessage = $"오류 발생: {ex.Message}";
-            }
-            finally
-            {
-                _cts?.Dispose();
-                _cts = null;
-            }
-        }
-
-        private async Task DownloadWithProgressAsync(string url, string destinationPath, int index, CancellationToken token)
-        {
-            using (var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token))
-            {
-                response.EnsureSuccessStatusCode();
-
-                var totalBytes = response.Content.Headers.ContentLength ?? -1L;
-                if (index == 0) FileSizeUrl1 = totalBytes;
-                else if (index == 1) FileSizeUrl2 = totalBytes;
-                else if (index == 2) FileSizeUrl3 = totalBytes;
-
-                using (var contentStream = await response.Content.ReadAsStreamAsync())
-                using (var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
-                {
-                    var buffer = new byte[4096]; // 4KB
-                    long totalReadBytes = 0;
-                    int readBytes;
-
-                    while ((readBytes = await contentStream.ReadAsync(buffer, 0, buffer.Length, token)) > 0)
-                    {
-                        token.ThrowIfCancellationRequested();
-
-                        await fileStream.WriteAsync(buffer, 0, readBytes, token);
-                        totalReadBytes += readBytes;
-
-                        if (totalBytes != -1)
-                        {
-                            double progress = (double)totalReadBytes / totalBytes * 100;
-
-                            if (index == 0) HttpRequestProgress1 = progress;
-                            else if (index == 1) HttpRequestProgress2 = progress;
-                            else if (index == 2) HttpRequestProgress3 = progress;
-                        }
-                    }
-                }
-            }
-        }
         private void CleanUpDownloadStatus()
         {
             // 진행도 초기화
-            HttpRequestProgress1 = 0;
-            HttpRequestProgress2 = 0;
-            HttpRequestProgress3 = 0;
-
-            // 파일 사이즈 초기화
-            FileSizeUrl1 = 0;
-            FileSizeUrl2 = 0;
-            FileSizeUrl3 = 0;
+            for (int i = 0; i < DownloadItems.Count; i++)
+            {
+                DownloadItems[i].Progress = 0f;
+            }
 
             // 상태메시지 (다운로드 취소)
             StatusMessage = Strings.cancel_download;
         }
+
         #endregion
-        
+
     }
 }

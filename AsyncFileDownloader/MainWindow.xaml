@@ -8,7 +8,7 @@
     xmlns:resx="clr-namespace:AsyncFileDownloader.Properties"
     Title="MainWindow"
     Width="900"
-    Height="500"
+    Height="600"
     mc:Ignorable="d">
 
     <Window.Resources>
@@ -30,10 +30,6 @@
                         Color="Black" />
                 </Setter.Value>
             </Setter>
-        </Style>
-
-        <Style x:Key="DownloadSectionStyle" TargetType="StackPanel">
-            <Setter Property="Margin" Value="10" />
         </Style>
 
         <Style TargetType="ProgressBar">
@@ -66,48 +62,31 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Border Style="{StaticResource DownloadSectionBorderStyle}">
-            <StackPanel Grid.Row="0" Margin="8">
-                <StackPanel Style="{StaticResource DownloadSectionStyle}">
-                    <TextBlock Style="{StaticResource HeaderLabelStyle}" Text="Link 1" />
-                    <TextBox Text="{Binding HttpRequestUrl1}" />
-                    <Grid>
-                        <ProgressBar Value="{Binding HttpRequestProgress1, Mode=OneWay}" />
-                        <TextBlock
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Text="{Binding HttpRequestProgress1, StringFormat={}{0:F1}%}" />
-                    </Grid>
-                    <TextBlock Style="{StaticResource ByteInfoStyle}" Text="{Binding FileSizeUrl1, StringFormat=Total: {0:#,0} Byte(s)}" />
-                </StackPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding DownloadItems}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource DownloadSectionBorderStyle}">
+                            <StackPanel Margin="15">
+                                <TextBlock Style="{StaticResource HeaderLabelStyle}" Text="{Binding FileName}" />
 
-                <StackPanel Style="{StaticResource DownloadSectionStyle}">
-                    <TextBlock Style="{StaticResource HeaderLabelStyle}" Text="Link 2" />
-                    <TextBox Text="{Binding HttpRequestUrl2}" />
-                    <Grid>
-                        <ProgressBar Value="{Binding HttpRequestProgress2, Mode=OneWay}" />
-                        <TextBlock
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Text="{Binding HttpRequestProgress2, StringFormat={}{0:F1}%}" />
-                    </Grid>
-                    <TextBlock Style="{StaticResource ByteInfoStyle}" Text="{Binding FileSizeUrl2, StringFormat=Total: {0:#,0} Byte(s)}" />
-                </StackPanel>
+                                <TextBox Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}" />
 
-                <StackPanel Style="{StaticResource DownloadSectionStyle}">
-                    <TextBlock Style="{StaticResource HeaderLabelStyle}" Text="Link 3" />
-                    <TextBox Text="{Binding HttpRequestUrl3}" />
-                    <Grid>
-                        <ProgressBar Value="{Binding HttpRequestProgress3, Mode=OneWay}" />
-                        <TextBlock
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Text="{Binding HttpRequestProgress3, StringFormat={}{0:F1}%}" />
-                    </Grid>
-                    <TextBlock Style="{StaticResource ByteInfoStyle}" Text="{Binding FileSizeUrl3, StringFormat=Total: {0:#,0} Byte(s)}" />
-                </StackPanel>
-            </StackPanel>
-        </Border>
+                                <Grid>
+                                    <ProgressBar Value="{Binding Progress, Mode=OneWay}" />
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Text="{Binding Progress, StringFormat={}{0:F1}%}" />
+                                </Grid>
+
+                                <TextBlock Style="{StaticResource ByteInfoStyle}" Text="{Binding SavePath, StringFormat=Path: {0}}" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
 
         <StackPanel
             Grid.Row="1"
@@ -129,6 +108,7 @@
 
         <TextBlock
             Grid.Row="2"
+            Padding="5"
             Background="{StaticResource PointBrush}"
             Text="{Binding StatusMessage}"
             TextAlignment="Right" />
