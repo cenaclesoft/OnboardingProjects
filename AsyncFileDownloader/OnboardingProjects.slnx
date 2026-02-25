@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="../TodoApp/TodoApp.csproj" Id="7b83243c-c843-4391-bdd8-fe83b2cbde54" />
   <Project Path="AsyncFileDownloader.csproj" Id="551f470a-46b6-4b31-9288-ff28437dc521" />
 </Solution>
