@@ -25,7 +25,7 @@ namespace AsyncFileDownloader.Helper
 
         public bool CanExecute(object parameter)
         {
-            return !_isExecuting && (_canExecute == null || _canExecute(parameter));
+            return (_isExecuting == false) && (_canExecute == null || _canExecute(parameter));
         }
 
         public async void Execute(object parameter)

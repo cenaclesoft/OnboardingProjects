@@ -140,13 +140,11 @@ namespace AsyncFileDownloader.ViewModel
 
         private void CleanUpDownloadStatus()
         {
-            // 진행도 초기화
             for (int i = 0; i < DownloadItems.Count; i++)
             {
                 DownloadItems[i].Progress = 0f;
             }
 
-            // 상태메시지 (다운로드 취소)
             StatusMessage = Strings.cancel_download;
         }
 
