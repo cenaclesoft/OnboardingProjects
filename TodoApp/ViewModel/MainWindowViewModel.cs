@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using AsyncFileDownloader.Helper;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,14 +16,11 @@ namespace TodoApp.ViewModel
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        
-
         #region Constructor
+
         public MainWindowViewModel()
         {
-            TodoList = new ObservableCollection<TodoItem>();
-
-            TodoList.Add(new TodoItem("example"));
+            TodoList = new TodoCollection();
 
             AddTodoCommand = new RelayCommand(onAddTodo, CanAddTodo);
             DeleteTodoCommand = new RelayCommand(onDeleteTodo);
@@ -30,12 +28,14 @@ namespace TodoApp.ViewModel
 
         #endregion
 
+        
         #region Binding Properties
         
         public ObservableCollection<TodoItem> TodoList { get; }
 
 
         private string _todoInput;
+        
         public string TodoInput
         {
             get => _todoInput;
@@ -43,6 +43,7 @@ namespace TodoApp.ViewModel
         }
 
         #endregion
+
 
         #region Commands
 

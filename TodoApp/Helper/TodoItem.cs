@@ -4,16 +4,16 @@
     {
         public TodoItem(string todoContent)
         {
-            _isChecked = false;
+            _isCompleted = false;
             _todoContent = todoContent;
         }
 
-        private bool _isChecked;
+        private bool _isCompleted;
 
-        public bool IsChecked
+        public bool IsCompleted
         {
-            get => _isChecked;
-            set => SetProperty(ref _isChecked, value);
+            get => _isCompleted;
+            set => SetProperty(ref _isCompleted, value);
         }
 
         private string _todoContent;
