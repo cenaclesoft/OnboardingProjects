@@ -62,14 +62,13 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding DownloadItems}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Style="{StaticResource DownloadSectionBorderStyle}">
+        <Border Style="{StaticResource DownloadSectionBorderStyle}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding DownloadItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
                             <StackPanel Margin="15">
-                                <TextBlock Style="{StaticResource HeaderLabelStyle}" Text="{Binding FileName}" />
-
+                                <TextBlock Style="{StaticResource HeaderLabelStyle}" Text="{Binding LinkTitle}" />
                                 <TextBox Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}" />
 
                                 <Grid>
@@ -82,11 +81,12 @@
 
                                 <TextBlock Style="{StaticResource ByteInfoStyle}" Text="{Binding SavePath, StringFormat=Path: {0}}" />
                             </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
 
         <StackPanel
             Grid.Row="1"

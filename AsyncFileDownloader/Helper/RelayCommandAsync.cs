@@ -7,18 +7,25 @@ namespace AsyncFileDownloader.Helper
     public class RelayCommandAsync : ICommand
     {
         private readonly Func<Task> _execute;
-        private readonly Func<bool> _canExecute;
+        private readonly Predicate<object> _canExecute;
+
         private bool _isExecuting;
 
-        public RelayCommandAsync(Func<Task> execute, Func<bool> canExecute = null)
+        public RelayCommandAsync(Func<Task> execute, Predicate<object> canExecute = null)
         {
-            _execute = execute;
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
+        }
+
+        public event EventHandler CanExecuteChanged
+        {
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
         }
 
         public bool CanExecute(object parameter)
         {
-            return !_isExecuting && (_canExecute == null || _canExecute());
+            return !_isExecuting && (_canExecute == null || _canExecute(parameter));
         }
 
         public async void Execute(object parameter)
@@ -29,7 +36,7 @@ namespace AsyncFileDownloader.Helper
                 {
                     _isExecuting = true;
                     RaiseCanExecuteChanged();
-                
+
                     await _execute();
                 }
                 finally
@@ -38,12 +45,6 @@ namespace AsyncFileDownloader.Helper
                     RaiseCanExecuteChanged();
                 }
             }
-        }
-
-        public event EventHandler CanExecuteChanged
-        {
-            add => CommandManager.RequerySuggested += value;
-            remove => CommandManager.RequerySuggested -= value;
         }
 
         public void RaiseCanExecuteChanged()

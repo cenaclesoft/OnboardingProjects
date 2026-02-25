@@ -60,33 +60,31 @@ async/await 동작 원리, Delegate/Event, Value Type vs Reference Type을 실�
 ```
 - Value Type vs Reference Type  
 다운로드 진행률을 int percent (Value Type)으로 전달할 때와 DownloadProgress 클래스 (Reference Type)로 전달할 때 차이를 코드로 비교  
-=> 본 프로젝트에서는 진행률 콜백을 구현하기 위해 해당 방법을 사용하지 않고 MVVM 패턴을 통해 Binding으로 구현
+=> value type은 값 복사(스택에 생성), Reference Type은 값이 있는 위치만 전달
 
 - 청크 읽기 루프에서 byte[] buffer가 힙에 할당되는 이유  
 => C#에서는 `new Array[]`를 참조형식으로 힙에 저장함.
 
 - Delegate / Event / Lambda  
-=> 본 프로젝트에서는 진행률 콜백을 구현하기 위해 해당 방법을 사용하지 않고, Binding Property를 통하여 즉시 반영한다.
 
 - CancellationToken 동작 원리  
 취소 버튼 클릭 → `CancellationTokenSource.Cancel()` → 다운로드 루프 중단까지의 과정 추적  
-=> 1. 취소버튼 클릭 -> 2. Command로 바인딩 된 `CancelCommand.Invoke` -> 3. `CancelCommand`에 등록된 콜백함수(`OnCancel()`) 실행 -> 4. 토큰값을 캔슬로 변경, 다운로드 상태 초기화(클린업) -> 5. 이후 `contentStream.ReadAsync` 루프에서 cts 취소 토큰과 함께 리퀘스트시 루프 탈출
+=> 1. 취소버튼 클릭 -> 2. Command로 바인딩 된 `CancelCommand.Invoke` -> 3. `CancelCommand`에 등록된 콜백함수(`OnCancel()`) 실행 -> 4. 토큰값을 캔슬로 변경 -> 5. 이후 `contentStream.ReadAsync` 루프에서 cts 취소 토큰과 함께 리퀘스트시 루프 탈출
 
 
 ### 확인 포인트
-- [ ] 일부러 Task.Run 안에서 ProgressBar.Value를 직접 건드려보고 예외 확인 → 왜 터지는지 정리
+- [x] 일부러 Task.Run 안에서 ProgressBar.Value를 직접 건드려보고 예외 확인 → 왜 터지는지 정리  
+=> 프로그램이 비정상 종료됨. UI Thread가 아닌 다른 Task 쓰레드로 분리된 상태이기 때문에, 직접 UI를 건드리면 예외가 발생함.
+- [x] await를 빼고 .Result로 바꿔보고 UI가 멈추는 것 확인 → 왜 멈추는지 데드락 원리와 함께 설명
+=> Task.Run은 처음부터 스레드풀에서 실행되니까 UI 스레드가 필요 없어서 데드락이 안 생기는데 .Result 사용 시 UI Thread를 블락한 상태에서 Task 작업 완료 후 복귀 시 UI Thread가 블락되어 있기 때문에 데드락 발생
 
-- [ ] await를 빼고 .Result로 바꿔보고 UI가 멈추는 것 확인 → 왜 멈추는지 데드락 원리와 함께 설명
+### Feedback
+- [x] 1. 코드 형식 통일 (Life 4 참조)
+- [x] 2. `Task.Run(async ()=>{})`를 활용한 비동기 구현
+- [x] 3. HttpClient 따로 파일 분리 (static 함수를 통한 호출)
+- [x] 4. View의 중복된 Panel 항목들을 `ItemsControl`을 활용하여 중복 제거
+- [x] 5. ViewModel Base [CallerMemeberName]
+- [x] 6. 에러 어디서 터지는지 try-catch 확인 <- Debug - Windows - Immediate ...
+- [x] 7. RelayCommand null check 통일
+- [x] 8. RelayCommand에서의 CommandManager 사용 이유 확인
 
-### TODO
-- [ ] Linting (Life 4 참조)
-- [ ] Task.Run()
-- [ ] RelayCommand 수정
-- [ ] HttpClient 따로 파일 분리 (static 함수로 만들었으면 좋겠다. Download 함수)
-- [ ] View Items로 바꿔서 중복 제거
-- [ ] ViewModel Base [] <- ?
-- [ ] 에러 어디서 터지는지 try-catch 확인 <- Debug - Windows - Immediate ...
-- [ ] CanExecute null check
-- [ ] Why CommandManager?
-- [ ] RaiseCanExecuteChanged
-- [ ] 

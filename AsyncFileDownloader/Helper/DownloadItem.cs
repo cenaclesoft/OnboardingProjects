@@ -5,12 +5,20 @@ namespace AsyncFileDownloader.Helper
 {
     public class DownloadItem : ViewModelBase
     {
+        private string _linkTitle;
+
+        public string LinkTitle
+        {
+            get => _linkTitle;
+            private set => SetProperty<string>(ref _linkTitle, value);
+        }
+
         private string _fileName;
 
         public string FileName
         {
             get => _fileName; 
-            set => SetProperty<string>(ref _fileName, value);
+            private set => SetProperty<string>(ref _fileName, value);
         }
 
 
@@ -28,7 +36,7 @@ namespace AsyncFileDownloader.Helper
         public string SavePath
         {
             get => _url;
-            set => SetProperty<string>(ref _savePath, value);
+            private set => SetProperty<string>(ref _savePath, value);
         }
 
 
@@ -42,8 +50,10 @@ namespace AsyncFileDownloader.Helper
 
         public IProgress<double> ProgressHandler { get; }
 
-        public DownloadItem()
+        public DownloadItem(string linkTitle, string url)
         {
+            LinkTitle = linkTitle;
+            Url = url;
             ProgressHandler = new Progress<double>(val => Progress = val);
         }
     }

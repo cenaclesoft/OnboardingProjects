@@ -1,8 +1,10 @@
-﻿using System;
+﻿using AsyncFileDownloader.ViewModel;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace AsyncFileDownloader.Manager
 {
@@ -26,18 +28,20 @@ namespace AsyncFileDownloader.Manager
 
                         var totalBytes = response.Content.Headers.ContentLength ?? -1L;
 
-                        using (var contentStream = await response.Content.ReadAsStreamAsync())
-                        using (var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
+                        using (Stream contentStream = await response.Content.ReadAsStreamAsync())
+
+                        using (FileStream fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
                         {
-                            var buffer = new byte[4096];
+                            byte[] buffer = new byte[8192]; // 8KB
                             long totalReadBytes = 0;
-                            int readBytes;
+                            int readBytes = 0;
 
                             while ((readBytes = await contentStream.ReadAsync(buffer, 0, buffer.Length, token)) > 0)
                             {
                                 token.ThrowIfCancellationRequested();
 
                                 await fileStream.WriteAsync(buffer, 0, readBytes, token);
+
                                 totalReadBytes += readBytes;
 
                                 if (totalBytes != -1)
@@ -52,13 +56,11 @@ namespace AsyncFileDownloader.Manager
             }
             catch (OperationCanceledException)
             {
-                // 취소는 예외가 아니므로 단순 throw
-                throw; 
+                throw;
             }
             catch (Exception ex)
             {
-                // 그 외 모든 에러 전파
-                throw new Exception($"다운로드 실패: {url}", ex);
+                throw new Exception($"실패: {url}", ex);
             }
         }
     }

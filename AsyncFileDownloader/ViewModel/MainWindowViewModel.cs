@@ -23,18 +23,16 @@ namespace AsyncFileDownloader.ViewModel
 
         public MainWindowViewModel()
         {
-            // 1. Binding Properties 초기값 설정
-            DownloadItems = new ObservableCollection<DownloadItem>
-            {
-                new DownloadItem { Url = Strings.url1 },
-                new DownloadItem { Url = Strings.url2 },
-                new DownloadItem { Url = Strings.url3 }
+            DownloadItems = new ObservableCollection<DownloadItem> {
+                new DownloadItem("Link 1", Strings.url1),
+                new DownloadItem("Link 2", Strings.url2),
+                new DownloadItem("Link 3", Strings.url3)
             };
 
-            // 2. Command 초기화
             DownloadAllCommand = new RelayCommandAsync(OnDownloadAllAsync, CanDownloadAll);
             CancelCommand = new RelayCommand(OnCancel, CanCancel);
         }
+        
         #endregion
 
 
@@ -46,7 +44,7 @@ namespace AsyncFileDownloader.ViewModel
 
         public string StatusMessage
         {
-            get { return _statusMessage; }
+            get => _statusMessage;
             private set => SetProperty<string>(ref _statusMessage, value);
         }
 
@@ -73,45 +71,58 @@ namespace AsyncFileDownloader.ViewModel
             string baseFilePath = saveFileDialog.FileName;
             StatusMessage = Strings.download_ongoing;
 
-            var urls = new[] { Strings.url1, Strings.url2, Strings.url3 };
+
+            string[] urls = new string[] { Strings.url1, Strings.url2, Strings.url3 };
+
+            List<Task> downloadTasks = new List<Task>();
 
             _cts = new CancellationTokenSource();
-
-            DateTime startTime = DateTime.Now;
-
-            var downloadTasks = new List<Task>();
 
             for (int i = 0; i < urls.Length; i++)
             {
                 if (string.IsNullOrWhiteSpace(urls[i])) continue;
+
                 downloadTasks.Add(
-                    FileDownloadManager.DownloadAsync(urls[i], $"{baseFilePath}_{i + 1}...", _cts.Token, DownloadItems[i].ProgressHandler));
+                    FileDownloadManager.DownloadAsync(
+                        urls[i], 
+                        $"{baseFilePath}_{i + 1}", 
+                        _cts.Token, 
+                        DownloadItems[i].ProgressHandler
+                    )
+                );
             }
 
-            await Task.WhenAll(downloadTasks);
+            try
+            {
+                DateTime startTime = DateTime.Now;
 
-            DateTime endTime = DateTime.Now;
+                await Task.WhenAll(downloadTasks);
 
-            StatusMessage = StatusMessage = $"{Strings.download_finished} {(endTime - startTime).TotalSeconds:F1}(초)"; ;
+                DateTime endTime = DateTime.Now;
 
-            _cts?.Dispose();
-            _cts = null;
+                StatusMessage = StatusMessage = $"{Strings.download_finished} {(endTime - startTime).TotalSeconds:F1}(초)"; ;
+            }
+            catch (OperationCanceledException)
+            {
+                CleanUpDownloadStatus();
+            }
+            finally
+            {
+                _cts?.Dispose();
+                _cts = null;
+            }
         }
 
-        private bool CanDownloadAll()
+        private bool CanDownloadAll(object parameter)
         {
-            // TODO: 다운로드 중일때는 잠궈
             return true;
         }
 
-        // TODO: 참조 걸리게 하는거 오름차트 참조
         public ICommand CancelCommand { get; set; }
 
         private void OnCancel()
         {
-            // TODO: 현재 Cancel 클릭 시 오류 발생
             _cts?.Cancel();
-            CleanUpDownloadStatus();
         }
 
         private bool CanCancel(object parameter)
