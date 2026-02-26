@@ -25,11 +25,7 @@ namespace TodoApp.Helper
             _canExecute = canExecute;
         }
 
-        public event EventHandler CanExecuteChanged
-        {
-            add => CommandManager.RequerySuggested += value;
-            remove => CommandManager.RequerySuggested -= value;
-        }
+        public event EventHandler CanExecuteChanged;
 
         public bool CanExecute(object parameter)
         {
@@ -42,12 +38,9 @@ namespace TodoApp.Helper
             _executeWithParam?.Invoke(parameter);
         }
 
-        // RaiseCanExecuteChanged를 구현하는 이유는
-        // 앞서 CommandManager가 UI Thread에서의 CanExecuteChanged 이벤트를 콜하기 때문에
-        // 다른 백그라운드에서 CanExecuteChanged를 호출할 수 있게끔 열어주는 역할
         public void RaiseCanExecuteChanged()
         {
-            CommandManager.InvalidateRequerySuggested();
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

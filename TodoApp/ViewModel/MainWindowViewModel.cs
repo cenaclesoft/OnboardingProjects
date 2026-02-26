@@ -39,7 +39,11 @@ namespace TodoApp.ViewModel
         public string TodoInput
         {
             get => _todoInput;
-            set => SetProperty<string>(ref _todoInput, value);
+            set
+            {
+                SetProperty<string>(ref _todoInput, value);
+                AddTodoCommand.RaiseCanExecuteChanged();
+            }
         }
 
         #endregion
@@ -47,7 +51,7 @@ namespace TodoApp.ViewModel
 
         #region Commands
 
-        public ICommand AddTodoCommand { get; }
+        public RelayCommand AddTodoCommand { get; }
 
         public void onAddTodo()
         {

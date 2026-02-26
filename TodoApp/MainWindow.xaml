@@ -13,7 +13,42 @@
     mc:Ignorable="d">
 
     <Window.Resources>
-        <!--    -->
+        <Style x:Key="CustomCheckBox" TargetType="{x:Type CheckBox}">
+            <Setter Property="Foreground" Value="#333333" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type CheckBox}">
+                        <StackPanel Orientation="Horizontal">
+                            <Grid Width="30" Height="30">
+                                <Ellipse
+                                    x:Name="Border"
+                                    Fill="White"
+                                    Stroke="#CCCCCC"
+                                    StrokeThickness="2" />
+                                <Ellipse
+                                    x:Name="CheckMark"
+                                    Margin="6"
+                                    Fill="#6200EE"
+                                    Visibility="Collapsed" />
+                            </Grid>
+                            <ContentPresenter Margin="10 0 0 0" VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="Border" Property="Stroke" Value="#6200EE" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Stroke" Value="#6200EE" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Grid>
@@ -32,113 +67,165 @@
 
                 <TextBlock
                     Grid.Column="0"
-                    Margin="20,0,0,0"
+                    Margin="50 0 0 0"
                     VerticalAlignment="Center"
                     FontFamily="Consolas"
                     FontSize="30"
                     FontWeight="Bold"
                     Text="Todo App" />
 
-                <Grid Grid.Column="1">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="30" />
-                            <ColumnDefinition Width="20" />
-                            <ColumnDefinition Width="20" />
-                            <ColumnDefinition Width="20" />
-                        </Grid.ColumnDefinitions>
+                <Grid Grid.Column="1" HorizontalAlignment="Right">
+                    <Border
+                        Height="50"
+                        Margin="0 0 50 0"
+                        Background="LightGray"
+                        CornerRadius="15">
+                        <Grid Margin="10 0 20 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
 
-                        <Image Grid.Column="0" />
-                        <TextBlock Grid.Column="1" Text="{Binding TodoList.CompletedCount}" />
-                        <TextBlock Grid.Column="2" Text="/" />
-                        <TextBlock Grid.Column="3" Text="{Binding TodoList.Count}" />
-                    </Grid>
+                            <Image
+                                Grid.Column="0"
+                                Margin="0 0 20 0"
+                                VerticalAlignment="Center"
+                                Source="/Asset/checkIcon.png" />
+                            <TextBlock
+                                Grid.Column="1"
+                                Margin="0 0 0 5"
+                                VerticalAlignment="Center"
+                                FontFamily="Noto Sans KR"
+                                FontSize="30"
+                                FontWeight="Bold"
+                                Text="{Binding TodoList.CompletedCount}" />
+                            <Image
+                                Grid.Column="2"
+                                Height="30"
+                                Margin="5 15 5 15"
+                                VerticalAlignment="Center"
+                                Source="/Asset/slash.png" />
+                            <TextBlock
+                                Grid.Column="3"
+                                Margin="0 0 0 5"
+                                VerticalAlignment="Center"
+                                FontFamily="Noto Sans KR"
+                                FontSize="30"
+                                FontWeight="Bold"
+                                Text="{Binding TodoList.Count}" />
+                        </Grid>
+                    </Border>
                 </Grid>
             </Grid>
         </Grid>
 
         <Grid Grid.Row="1">
-            <TextBlock Background="Aqua" />
-            <Grid Margin="50,20,50,20">
+            <TextBlock Background="White" />
+            <Grid Margin="50 5 50 20">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <!--  TODO: StackPanel로 NewTodoItem, TodoList 쌓기  -->
-                <TextBlock Background="Azure" />
-
                 <Border
                     Grid.Row="0"
                     Height="65"
-                    Margin="0,0,0,10"
-                    Background="White"
-                    BorderBrush="Gray"
-                    BorderThickness="1"
-                    CornerRadius="5">
+                    Margin="0 0 0 10"
+                    Background="White">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="65" />
                         </Grid.ColumnDefinitions>
 
-                        <Border
-                            Grid.Column="0"
-                            Margin="0,0,10,0"
-                            Background="DarkKhaki">
+                        <Border Grid.Column="0" Margin="0 0 5 0">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="White" />
+                                    <Setter Property="BorderBrush" Value="LightGray" />
+                                    <Setter Property="BorderThickness" Value="1" />
+
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding TodoInput.Length, FallbackValue=0}" Value="0">
+                                            <Setter Property="BorderBrush" Value="LightGray" />
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding TodoInput.IsEmpty}" Value="False">
+                                            <Setter Property="BorderBrush" Value="#6200EE" />
+                                            <Setter Property="BorderThickness" Value="2" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+
                             <TextBox
-                                Margin="10,0,10,0"
+                                Margin="10 0 10 0"
                                 VerticalAlignment="Center"
+                                BorderThickness="0"
                                 FontSize="20"
                                 Text="{Binding TodoInput, UpdateSourceTrigger=PropertyChanged}" />
                         </Border>
 
-                        <Border Grid.Column="1" Background="DarkKhaki">
-                            <Button Background="DarkOrange" Command="{Binding AddTodoCommand}" />
+                        <Border Grid.Column="1" Background="white">
+                            <Button Background="#6200EE" Command="{Binding AddTodoCommand}">
+                                <TextBlock
+                                    Padding="0 0 0 6"
+                                    VerticalAlignment="Center"
+                                    FontSize="40"
+                                    FontWeight="ExtraLight"
+                                    Foreground="White"
+                                    LineHeight="40"
+                                    Text="+" />
+                            </Button>
                         </Border>
                     </Grid>
                 </Border>
 
                 <Border
                     Grid.Row="1"
-                    Margin="0,0,0,10"
+                    Margin="0 0 0 10"
                     Background="White"
-                    BorderBrush="Gray"
-                    BorderThickness="1"
-                    CornerRadius="5">
+                    CornerRadius="10">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <ItemsControl ItemsSource="{Binding TodoList}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border BorderBrush="Gray" BorderThickness="1">
+                                    <Border Margin="0 0 0 10" Background="#F3F1F4">
                                         <Grid Height="65">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="15" />
                                                 <ColumnDefinition Width="50" />
                                                 <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="30" />
+                                                <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
 
-                                            <Border Grid.Column="0" Background="Coral" />
-
                                             <CheckBox
-                                                Grid.Column="1"
+                                                Grid.Column="0"
+                                                Margin="10 0 0 0"
+                                                HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
-                                                IsChecked="{Binding IsCompleted}" />
+                                                IsChecked="{Binding IsCompleted}"
+                                                Style="{StaticResource CustomCheckBox}" />
 
                                             <TextBlock
-                                                Grid.Column="2"
+                                                Grid.Column="1"
+                                                Padding="0 0 0 4"
                                                 VerticalAlignment="Center"
-                                                Background="BlueViolet"
                                                 FontSize="20"
                                                 Text="{Binding TodoContent}" />
 
                                             <Button
-                                                Grid.Column="3"
+                                                Grid.Column="2"
                                                 Height="30"
-                                                Background="DarkGoldenrod"
+                                                Margin="0 0 15 0"
+                                                Background="Transparent"
+                                                BorderThickness="0"
                                                 Command="{Binding DataContext.DeleteTodoCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                                CommandParameter="{Binding}" />
+                                                CommandParameter="{Binding}"
+                                                Cursor="Hand">
+                                                <Image Opacity="0.5" Source="/Asset/deleteIcon.png" />
+                                            </Button>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -152,6 +239,5 @@
         <Grid Grid.Row="2">
             <TextBlock Background="Beige" />
         </Grid>
-
     </Grid>
 </Window>

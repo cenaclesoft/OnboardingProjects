@@ -99,5 +99,15 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Asset\slash.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Asset\checkIcon.png" />
+    <Resource Include="Asset\deleteIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Asset\plus.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
