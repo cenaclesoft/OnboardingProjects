@@ -16,6 +16,7 @@ namespace TodoApp.ViewModel
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        // TODO: 앱 기능 확장
         #region Constructor
 
         public MainWindowViewModel()
