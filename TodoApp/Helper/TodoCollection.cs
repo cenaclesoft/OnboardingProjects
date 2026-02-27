@@ -41,6 +41,11 @@ namespace AsyncFileDownloader.Helper
         {
             base.InsertItem(index, item);
             item.PropertyChanged += OnItemPropertyChanged;
+
+            if (item.IsCompleted)
+            {
+                ++CompletedCount;
+            }
         }
 
         private void OnItemPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -55,8 +60,10 @@ namespace AsyncFileDownloader.Helper
                     }
                     else
                     {
-                        if (CompletedCount > 0) 
+                        if (CompletedCount > 0)
+                        {
                             --CompletedCount;
+                        }
                     }
                 }
             }

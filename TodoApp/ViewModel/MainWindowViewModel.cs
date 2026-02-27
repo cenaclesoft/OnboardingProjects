@@ -27,6 +27,7 @@ namespace TodoApp.ViewModel
             AddTodoCommand = new RelayCommand(onAddTodo, CanAddTodo);
             DeleteTodoCommand = new RelayCommand(onDeleteTodo);
             SaveOnJsonCommand = new RelayCommandAsync(OnSaveOnJson);
+            LoadCommand = new RelayCommandAsync(OnLoad);
         }
 
         #endregion
@@ -74,7 +75,7 @@ namespace TodoApp.ViewModel
 
         public RelayCommand AddTodoCommand { get; }
 
-        public void onAddTodo()
+        private void onAddTodo()
         {
             TodoList.Add(new TodoItem(TodoInput));
             TodoInput = string.Empty;
@@ -95,7 +96,7 @@ namespace TodoApp.ViewModel
 
         public RelayCommand DeleteTodoCommand { get; }
 
-        public void onDeleteTodo(object parameter)
+        private void onDeleteTodo(object parameter)
         {
             if (parameter is TodoItem item)
             {
@@ -106,7 +107,7 @@ namespace TodoApp.ViewModel
 
         public RelayCommandAsync SaveOnJsonCommand { get; }
 
-        public async Task OnSaveOnJson(object parameter)
+        private async Task OnSaveOnJson(object parameter)
         {
             string path = OpenSaveFileDialog();
             if (path == null)
@@ -114,17 +115,54 @@ namespace TodoApp.ViewModel
                 return;
             }
 
-            // 실제 저장 후 2초 인위 지연 (요구사항)
-            await JsonServiceManager.Instance.SaveAsync(path, TodoList);
-            await Task.Delay(2000);
-
-            // 저장 완료
-            StatusMessage = "저장 완료!";
-            TitleMessage = $"TODO App - {path}";
-
+            try
+            {
+                // 실제 저장 후 2초 인위 지연 (요구사항)
+                await JsonServiceManager.Instance.SaveAsync(path, TodoList);
+                // 저장 완료
+                StatusMessage = "저장 완료!";
+                TitleMessage = $"TODO App - {path}";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"저장 실패: {ex.Message}";
+            }
+            
             // 3초 지연 후 상태메시지 초기화
             await Task.Delay(3000);
             StatusMessage = "";
+        }
+
+
+        public RelayCommandAsync LoadCommand { get; }
+
+        private async Task OnLoad(object parameter)
+        {
+            string path = OpenLoadFileDialog();
+            
+            if (path == null)
+            {
+                return;
+            }
+
+            TodoCollection loaded;
+
+            try
+            {
+                loaded = await JsonServiceManager.Instance.LoadAsync(path);
+
+                TodoList.Clear();
+                foreach (var item in loaded)
+                {
+                    TodoList.Add(item);
+                }
+
+                StatusMessage = "불러오기 완료!";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"불러오기 실패: {ex.Message}";
+            }
         }
 
         #endregion
@@ -148,6 +186,23 @@ namespace TodoApp.ViewModel
             StatusMessage = "저장 중...";
 
             return saveFileDialog.FileName;
+        }
+
+        private string OpenLoadFileDialog()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            openFileDialog.Title = "파일 불러오기";
+            openFileDialog.Filter = "JSON files (*.json)|*.json";
+            
+            if (openFileDialog.ShowDialog() == false)
+            {
+                return null;
+            }
+
+            StatusMessage = "불러오는 중...";
+
+            return openFileDialog.FileName;
         }
 
         #endregion

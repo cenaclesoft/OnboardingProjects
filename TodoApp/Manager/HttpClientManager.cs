@@ -11,7 +11,7 @@ namespace TodoApp.Manager
     {
         private HttpClientManager() { }
 
-        public static HttpClientManager Instance { get; }
+        public static HttpClientManager Instance { get; } = new HttpClientManager();
 
         public static void SomeFunction ()
         {
