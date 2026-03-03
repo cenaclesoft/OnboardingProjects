@@ -6,7 +6,7 @@
     xmlns:local="clr-namespace:TodoApp"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:TodoApp.ViewModel"
-    Title="MainWindow"
+    Title="{Binding TitleMessage}"
     Width="800"
     Height="650"
     d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"

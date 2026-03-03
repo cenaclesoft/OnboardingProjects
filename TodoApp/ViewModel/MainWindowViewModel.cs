@@ -180,8 +180,6 @@ namespace TodoApp.ViewModel
 
         private async Task OnLoadSample(object parameter)
         {
-            // TODO: 버그 (샘플 불러오기 중 화면 조작 시 Complete Count가 오동작)
-            // 기존 체크한 Todolist 상태의 Completed Count 값이 덮어씌워짐.
             try
             {
                 IsBusy = true;
