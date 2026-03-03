@@ -17,7 +17,6 @@ namespace TodoApp.ViewModel
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        // TODO: 앱 기능 확장
         #region Constructor
 
         public MainWindowViewModel()
@@ -28,6 +27,7 @@ namespace TodoApp.ViewModel
             DeleteTodoCommand = new RelayCommand(onDeleteTodo);
             SaveOnJsonCommand = new RelayCommandAsync(OnSaveOnJson);
             LoadCommand = new RelayCommandAsync(OnLoad);
+            LoadSampleCommand = new RelayCommandAsync(OnLoadSample);
         }
 
         #endregion
@@ -127,7 +127,7 @@ namespace TodoApp.ViewModel
             {
                 StatusMessage = $"저장 실패: {ex.Message}";
             }
-            
+
             // 3초 지연 후 상태메시지 초기화
             await Task.Delay(3000);
             StatusMessage = "";
@@ -139,7 +139,7 @@ namespace TodoApp.ViewModel
         private async Task OnLoad(object parameter)
         {
             string path = OpenLoadFileDialog();
-            
+
             if (path == null)
             {
                 return;
@@ -162,6 +162,37 @@ namespace TodoApp.ViewModel
             catch (Exception ex)
             {
                 StatusMessage = $"불러오기 실패: {ex.Message}";
+            }
+        }
+
+        public RelayCommandAsync LoadSampleCommand { get; }
+
+        private async Task OnLoadSample(object parameter)
+        {
+            try
+            {
+                StatusMessage = "서버에서 가져오는 중...";
+
+                TodoCollection loaded = await HttpClientManager.Instance.GetSampleAsync();
+
+                if (loaded == null)
+                {
+                    StatusMessage = "Json 파싱 실패";
+                    return;
+                }
+
+                TodoList.Clear();
+
+                foreach (var item in loaded)
+                {
+                    TodoList.Add(item);
+                }
+
+                StatusMessage = "5건 추가 완료";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"네트워크 오류 : {ex.Message}";
             }
         }
 
@@ -194,7 +225,7 @@ namespace TodoApp.ViewModel
 
             openFileDialog.Title = "파일 불러오기";
             openFileDialog.Filter = "JSON files (*.json)|*.json";
-            
+
             if (openFileDialog.ShowDialog() == false)
             {
                 return null;

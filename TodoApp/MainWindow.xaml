@@ -263,6 +263,7 @@
                 <Button
                     Grid.Column="2"
                     Width="150"
+                    Command="{Binding LoadSampleCommand}"
                     Content="샘플 할 일 가져오기" />
             </Grid>
         </Grid>
