@@ -8,8 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 using TodoApp.Helper;
 using TodoApp.Manager;
 using TodoApp.Properties;
@@ -178,7 +180,8 @@ namespace TodoApp.ViewModel
 
         private async Task OnLoadSample(object parameter)
         {
-            // TODO: ProgressBar IsIndeterminate = True 표시
+            // TODO: 버그 (샘플 불러오기 중 화면 조작 시 Complete Count가 오동작)
+            // 기존 체크한 Todolist 상태의 Completed Count 값이 덮어씌워짐.
             try
             {
                 IsBusy = true;
@@ -200,6 +203,40 @@ namespace TodoApp.ViewModel
                 }
 
                 StatusMessage = "5건 추가 완료";
+
+                // 1. 방식 A : Task.Run 내부에서 직접 컬렉션에 아이템을 추가할 경우,
+                // 이 형식의 CollectionView에서는 발송자 스레드와 다른 스레드에서의 SourceCollection에 대한 변경내용을
+                // 지원하지 않는다는 오류를 띄우며 정상적인 UI 갱신이 이루어지지 않는다.
+                // 
+                // await Task.Run(() =>
+                // {
+                //     foreach (var item in loaded)
+                //     {
+                //         TodoList.Add(item);
+                //     }
+                // });
+
+
+                // 2. 방식 B: Task.Run 내부에서 기존 컬렉션을 수정하는 것은 잘못된 동작이지만,
+                // Dispatcher를 통해 큐에 직접 작업을 등록하는 형식으로 수행하면 DispatcherObejct 수정이 가능하다.
+
+                // await Task.Run(() =>
+                // {
+                //     Dispatcher dispatcher = Application.Current.Dispatcher;
+
+                //     Action updateAction = () =>
+                //     {
+                //         foreach (var item in loaded)
+                //         {
+                //             TodoList.Add(item);
+                //         }
+                //     };
+
+                //     dispatcher.Invoke(updateAction);
+                // });
+
+
+                // 3. 방식 C : 기존 async/await를 이용하는 방식
             }
             catch (Exception ex)
             {

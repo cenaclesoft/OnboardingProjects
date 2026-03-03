@@ -74,11 +74,25 @@ namespace AsyncFileDownloader.Helper
             var itemToRemove = this[index];
 
             itemToRemove.PropertyChanged -= OnItemPropertyChanged;
+            
             if (itemToRemove.IsCompleted && (CompletedCount > 0))
             {
                 --CompletedCount;
             }
+            
             base.RemoveItem(index);
+        }
+
+        protected override void ClearItems()
+        {
+            foreach (var item in this)
+            {
+                item.PropertyChanged -= OnItemPropertyChanged;
+            }
+
+            base.ClearItems();
+
+            CompletedCount = 0;
         }
 
         protected bool SetProperty<T>(ref T member, T value, [CallerMemberName] string propertyName = null)
