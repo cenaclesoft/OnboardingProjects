@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Input;
 using TodoApp.Helper;
 using TodoApp.Manager;
@@ -66,6 +67,14 @@ namespace TodoApp.ViewModel
                 SetProperty<string>(ref _todoInput, value);
                 AddTodoCommand.RaiseCanExecuteChanged();
             }
+        }
+
+        private bool _isBusy;
+
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set => SetProperty<bool>(ref _isBusy, value);
         }
 
         #endregion
@@ -169,8 +178,10 @@ namespace TodoApp.ViewModel
 
         private async Task OnLoadSample(object parameter)
         {
+            // TODO: ProgressBar IsIndeterminate = True 표시
             try
             {
+                IsBusy = true;
                 StatusMessage = "서버에서 가져오는 중...";
 
                 TodoCollection loaded = await HttpClientManager.Instance.GetSampleAsync();
@@ -193,6 +204,10 @@ namespace TodoApp.ViewModel
             catch (Exception ex)
             {
                 StatusMessage = $"네트워크 오류 : {ex.Message}";
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 

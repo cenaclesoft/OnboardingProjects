@@ -13,6 +13,7 @@
     mc:Ignorable="d">
 
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <Style x:Key="CustomCheckBox" TargetType="{x:Type CheckBox}">
             <Setter Property="Foreground" Value="#333333" />
             <Setter Property="FontSize" Value="14" />
@@ -56,6 +57,7 @@
             <RowDefinition Height="80" />
             <RowDefinition Height="*" />
             <RowDefinition Height="60" />
+            <RowDefinition Height="15" />
             <RowDefinition Height="15" />
         </Grid.RowDefinitions>
 
@@ -268,6 +270,9 @@
             </Grid>
         </Grid>
         <Grid Grid.Row="3">
+            <ProgressBar IsIndeterminate="{Binding IsBusy}" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}" />
+        </Grid>
+        <Grid Grid.Row="4">
             <TextBlock Text="{Binding StatusMessage}" />
         </Grid>
     </Grid>
