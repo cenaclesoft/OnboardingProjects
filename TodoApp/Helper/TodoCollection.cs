@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -47,28 +47,6 @@ namespace TodoApp.Helper
 
         #region Helpers
 
-        // feedback: Depth가 너무 길다.
-        // private void OnItemPropertyChanged(object sender, PropertyChangedEventArgs e)
-        // {
-        //     if (sender is TodoItem item)
-        //     {
-        //         if (e.PropertyName == nameof(TodoItem.IsCompleted))
-        //         {
-        //             if (item.IsCompleted)
-        //             {
-        //                 ++CompletedCount;
-        //             }
-        //             else
-        //             {
-        //                 if (CompletedCount > 0)
-        //                 {
-        //                     --CompletedCount;
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-        // answer: 
         private void OnItemPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (!(sender is TodoItem item)) return;
@@ -87,38 +65,6 @@ namespace TodoApp.Helper
 
             item.PropertyChanged -= OnItemPropertyChanged;
             item.PropertyChanged += OnItemPropertyChanged;
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
-
-            if (item.IsCompleted)
-            {
-                ++CompletedCount;
-            }
->>>>>>> Assignment3
-        }
-
-        private void OnItemPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(TodoItem.IsCompleted))
-            {
-                if (sender is TodoItem item)
-                {
-                    if (item.IsCompleted)
-                    {
-                        ++CompletedCount;
-                    }
-                    else
-                    {
-                        if (CompletedCount > 0)
-                        {
-                            --CompletedCount;
-                        }
-                    }
-                }
-            }
-        }
-=======
 
             ++TotalCount;
 
@@ -128,44 +74,24 @@ namespace TodoApp.Helper
             }
         }
 
->>>>>>> Stashed changes
 
         protected override void RemoveItem(int index)
         {
             var itemToRemove = this[index];
 
             itemToRemove.PropertyChanged -= OnItemPropertyChanged;
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
 
             --TotalCount;
 
->>>>>>> Stashed changes
-=======
-            
->>>>>>> Assignment3
             if (itemToRemove.IsCompleted && (CompletedCount > 0))
             {
                 --CompletedCount;
             }
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-            base.RemoveItem(index);
-        }
-
-=======
 
             base.RemoveItem(index);
         }
 
 
-=======
-            
-            base.RemoveItem(index);
-        }
-
->>>>>>> Assignment3
         protected override void ClearItems()
         {
             foreach (var item in this)
@@ -176,15 +102,9 @@ namespace TodoApp.Helper
             base.ClearItems();
 
             CompletedCount = 0;
-<<<<<<< HEAD
             TotalCount = 0;
         }
 
->>>>>>> Stashed changes
-=======
-        }
-
->>>>>>> Assignment3
         protected bool SetProperty<T>(ref T member, T value, [CallerMemberName] string propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(member, value))
