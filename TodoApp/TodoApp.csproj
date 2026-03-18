@@ -55,8 +55,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Data\TodoItemDto.cs" />
+    <Compile Include="Data\TodoItemModel.cs" />
     <Compile Include="Helper\RelayCommand.cs" />
     <Compile Include="Helper\TodoCollection.cs" />
+<<<<<<< Updated upstream
+=======
+    <Compile Include="Business\HttpClientManager.cs" />
+    <Compile Include="Business\JsonServiceManager.cs" />
+>>>>>>> Stashed changes
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="Helper\TodoItem.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />

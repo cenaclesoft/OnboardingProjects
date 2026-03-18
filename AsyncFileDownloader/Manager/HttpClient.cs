@@ -1,5 +1,6 @@
 ﻿using AsyncFileDownloader.ViewModel;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -22,6 +23,8 @@ namespace AsyncFileDownloader.Manager
             {
                 await Task.Run(async () =>
                 {
+                    System.Diagnostics.Debug.WriteLine($"작업 스레드: {Thread.CurrentThread.ManagedThreadId}");
+
                     using (var response = await _httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token))
                     {
                         response.EnsureSuccessStatusCode();
