@@ -1,4 +1,6 @@
-﻿namespace TodoApp.ViewModel
+﻿using Newtonsoft.Json;
+
+namespace TodoApp.ViewModel
 {
     public class TodoItem : ViewModelBase
     {
@@ -16,6 +18,7 @@
 
         private bool _isCompleted;
 
+        [JsonProperty("completed")]
         public bool IsCompleted
         {
             get => _isCompleted;
@@ -24,6 +27,7 @@
 
         private string _todoContent;
 
+        [JsonProperty("title")]
         public string TodoContent
         {
             get => _todoContent;

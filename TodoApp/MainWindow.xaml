@@ -6,13 +6,14 @@
     xmlns:local="clr-namespace:TodoApp"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:TodoApp.ViewModel"
-    Title="MainWindow"
+    Title="{Binding TitleMessage}"
     Width="800"
     Height="650"
     d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
     mc:Ignorable="d">
 
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <Style x:Key="CustomCheckBox" TargetType="{x:Type CheckBox}">
             <Setter Property="Foreground" Value="#333333" />
             <Setter Property="FontSize" Value="14" />
@@ -33,7 +34,7 @@
                                     Fill="#6200EE"
                                     Visibility="Collapsed" />
                             </Grid>
-                            <ContentPresenter Margin="10 0 0 0" VerticalAlignment="Center" />
+                            <ContentPresenter Margin="10,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
 
                         <ControlTemplate.Triggers>
@@ -55,7 +56,9 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="80" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="30" />
+            <RowDefinition Height="60" />
+            <RowDefinition Height="15" />
+            <RowDefinition Height="15" />
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
@@ -67,7 +70,7 @@
 
                 <TextBlock
                     Grid.Column="0"
-                    Margin="50 0 0 0"
+                    Margin="50,0,0,0"
                     VerticalAlignment="Center"
                     FontFamily="Consolas"
                     FontSize="30"
@@ -77,10 +80,10 @@
                 <Grid Grid.Column="1" HorizontalAlignment="Right">
                     <Border
                         Height="50"
-                        Margin="0 0 50 0"
+                        Margin="0,0,50,0"
                         Background="LightGray"
                         CornerRadius="15">
-                        <Grid Margin="10 0 20 0">
+                        <Grid Margin="10,0,20,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
@@ -90,12 +93,12 @@
 
                             <Image
                                 Grid.Column="0"
-                                Margin="0 0 20 0"
+                                Margin="0,0,20,0"
                                 VerticalAlignment="Center"
                                 Source="/Asset/checkIcon.png" />
                             <TextBlock
                                 Grid.Column="1"
-                                Margin="0 0 0 5"
+                                Margin="0,0,0,5"
                                 VerticalAlignment="Center"
                                 FontFamily="Noto Sans KR"
                                 FontSize="30"
@@ -104,12 +107,12 @@
                             <Image
                                 Grid.Column="2"
                                 Height="30"
-                                Margin="5 15 5 15"
+                                Margin="5,15,5,15"
                                 VerticalAlignment="Center"
                                 Source="/Asset/slash.png" />
                             <TextBlock
                                 Grid.Column="3"
-                                Margin="0 0 0 5"
+                                Margin="0,0,0,5"
                                 VerticalAlignment="Center"
                                 FontFamily="Noto Sans KR"
                                 FontSize="30"
@@ -123,7 +126,7 @@
 
         <Grid Grid.Row="1">
             <TextBlock Background="White" />
-            <Grid Margin="50 5 50 20">
+            <Grid Margin="50,5,50,20">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
@@ -132,7 +135,7 @@
                 <Border
                     Grid.Row="0"
                     Height="65"
-                    Margin="0 0 0 10"
+                    Margin="0,0,0,10"
                     Background="White">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -140,7 +143,7 @@
                             <ColumnDefinition Width="65" />
                         </Grid.ColumnDefinitions>
 
-                        <Border Grid.Column="0" Margin="0 0 5 0">
+                        <Border Grid.Column="0" Margin="0,0,5,0">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <Setter Property="Background" Value="White" />
@@ -161,7 +164,7 @@
                             </Border.Style>
 
                             <TextBox
-                                Margin="10 0 10 0"
+                                Margin="10,0,10,0"
                                 VerticalAlignment="Center"
                                 BorderThickness="0"
                                 FontSize="20"
@@ -171,7 +174,7 @@
                         <Border Grid.Column="1" Background="white">
                             <Button Background="#6200EE" Command="{Binding AddTodoCommand}">
                                 <TextBlock
-                                    Padding="0 0 0 6"
+                                    Padding="0,0,0,6"
                                     VerticalAlignment="Center"
                                     FontSize="40"
                                     FontWeight="ExtraLight"
@@ -185,7 +188,7 @@
 
                 <Border
                     Grid.Row="1"
-                    Margin="0 0 0 10"
+                    Margin="0,0,0,10"
                     Background="White"
                     CornerRadius="10">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -194,7 +197,7 @@
                             <!-- 2. 이때 ItemTemplate은 각 Item마다 적용되는 Template임 -->
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Margin="0 0 0 10" Background="#F3F1F4">
+                                    <Border Margin="0,0,0,10" Background="#F3F1F4">
                                         <Grid Height="65">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="50" />
@@ -204,7 +207,7 @@
 
                                             <CheckBox
                                                 Grid.Column="0"
-                                                Margin="10 0 0 0"
+                                                Margin="10,0,0,0"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 IsChecked="{Binding IsCompleted}"
@@ -212,7 +215,7 @@
 
                                             <TextBlock
                                                 Grid.Column="1"
-                                                Padding="0 0 0 4"
+                                                Padding="0,0,0,4"
                                                 VerticalAlignment="Center"
                                                 FontSize="20"
                                                 Text="{Binding TodoContent}" />
@@ -220,7 +223,7 @@
                                             <Button
                                                 Grid.Column="2"
                                                 Height="30"
-                                                Margin="0 0 15 0"
+                                                Margin="0,0,15,0"
                                                 Background="Transparent"
                                                 BorderThickness="0"
                                                 Command="{Binding DataContext.DeleteTodoCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
@@ -240,8 +243,11 @@
 
         <Grid Grid.Row="2">
             <TextBlock Background="Beige" />
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Assignment3
             <Grid
                 Height="50"
                 HorizontalAlignment="Center"
@@ -254,13 +260,21 @@
                 <Button
                     Grid.Column="0"
                     Width="150"
+<<<<<<< HEAD
                     Margin="0 0 16 0"
+=======
+                    Margin="0,0,16,0"
+>>>>>>> Assignment3
                     Command="{Binding SaveOnJsonCommand}"
                     Content="저장" />
                 <Button
                     Grid.Column="1"
                     Width="150"
+<<<<<<< HEAD
                     Margin="0 0 16 0"
+=======
+                    Margin="0,0,16,0"
+>>>>>>> Assignment3
                     Command="{Binding LoadCommand}"
                     Content="불러오기" />
                 <Button
@@ -275,7 +289,10 @@
         </Grid>
         <Grid Grid.Row="4">
             <TextBlock Text="{Binding StatusMessage}" />
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> Assignment3
         </Grid>
     </Grid>
 </Window>

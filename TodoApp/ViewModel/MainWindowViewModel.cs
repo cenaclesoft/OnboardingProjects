@@ -1,9 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+<<<<<<< HEAD
 <<<<<<< Updated upstream
+=======
+using System.Windows;
+using System.Windows.Controls;
+>>>>>>> Assignment3
 using System.Windows.Input;
+using System.Windows.Threading;
 using TodoApp.Helper;
+using TodoApp.Manager;
 using TodoApp.Properties;
 =======
 using Microsoft.Win32;
@@ -25,21 +32,45 @@ namespace TodoApp.ViewModel
 <<<<<<< Updated upstream
             AddTodoCommand = new RelayCommand(onAddTodo, CanAddTodo);
             DeleteTodoCommand = new RelayCommand(onDeleteTodo);
+<<<<<<< HEAD
 =======
             InitializeCommands();
 >>>>>>> Stashed changes
+=======
+            SaveOnJsonCommand = new RelayCommandAsync(OnSaveOnJson);
+            LoadCommand = new RelayCommandAsync(OnLoad);
+            LoadSampleCommand = new RelayCommandAsync(OnLoadSample);
+>>>>>>> Assignment3
         }
 
         #endregion
 
-        
+
         #region Binding Properties
-        
-        public ObservableCollection<TodoItem> TodoList { get; }
+
+        public TodoCollection TodoList { get; }
+
+
+        private string _titleMessage;
+
+        public string TitleMessage
+        {
+            get => _titleMessage;
+            set => SetProperty<string>(ref _titleMessage, value);
+        }
+
+
+        private string _statusMessage;
+
+        public string StatusMessage
+        {
+            get => _statusMessage;
+            set => SetProperty<string>(ref _statusMessage, value);
+        }
 
 
         private string _todoInput;
-        
+
         public string TodoInput
         {
             get => _todoInput;
@@ -57,6 +88,14 @@ namespace TodoApp.ViewModel
             }
         }
 
+        private bool _isBusy;
+
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set => SetProperty<bool>(ref _isBusy, value);
+        }
+
         #endregion
 
 
@@ -64,11 +103,15 @@ namespace TodoApp.ViewModel
 
         public RelayCommand AddTodoCommand { get; private set; }
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
         public void onAddTodo()
 =======
         private void OnAddTodo() // 컨벤션 수정 on -> On
 >>>>>>> Stashed changes
+=======
+        private void onAddTodo()
+>>>>>>> Assignment3
         {
             TodoList.Add(new TodoItem(TodoInput));
             TodoInput = string.Empty;
@@ -84,6 +127,7 @@ namespace TodoApp.ViewModel
         }
 
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
         public ICommand DeleteTodoCommand { get; }
 
@@ -93,6 +137,11 @@ namespace TodoApp.ViewModel
 
         private void OnDeleteTodo(object obj) // 컨벤션 수정 on -> On
 >>>>>>> Stashed changes
+=======
+        public RelayCommand DeleteTodoCommand { get; }
+
+        private void onDeleteTodo(object parameter)
+>>>>>>> Assignment3
         {
             if (obj is TodoItem item)
             {
@@ -100,10 +149,15 @@ namespace TodoApp.ViewModel
             }
         }
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
 
         public RelayCommandAsync SaveOnJsonCommand { get; private set; }
+=======
+
+        public RelayCommandAsync SaveOnJsonCommand { get; }
+>>>>>>> Assignment3
 
         private async Task OnSaveOnJson(object parameter)
         {
@@ -115,10 +169,16 @@ namespace TodoApp.ViewModel
 
             try
             {
+<<<<<<< HEAD
                 var models = TodoList.Select(item => new TodoItemModel(item.IsCompleted, item.TodoContent));
                 
                 await JsonServiceManager.Instance.SaveAsync(path, models);
 
+=======
+                // 실제 저장 후 2초 인위 지연 (요구사항)
+                await JsonServiceManager.Instance.SaveAsync(path, TodoList);
+                // 저장 완료
+>>>>>>> Assignment3
                 StatusMessage = "저장 완료!";
                 TitleMessage = $"TODO App - {path}";
             }
@@ -127,22 +187,36 @@ namespace TodoApp.ViewModel
                 StatusMessage = $"저장 실패: {ex.Message}";
             }
 
+<<<<<<< HEAD
             // 3초 지연 후 상태메시지 초기화 (요구사항)
+=======
+            // 3초 지연 후 상태메시지 초기화
+>>>>>>> Assignment3
             await Task.Delay(3000);
             StatusMessage = "";
         }
 
 
+<<<<<<< HEAD
         public RelayCommandAsync LoadCommand { get; private set; }
 
         private async Task OnLoad(object parameter)
         {
             var path = OpenLoadFileDialog(); // *
+=======
+        public RelayCommandAsync LoadCommand { get; }
+
+        private async Task OnLoad(object parameter)
+        {
+            string path = OpenLoadFileDialog();
+
+>>>>>>> Assignment3
             if (path == null)
             {
                 return;
             }
 
+<<<<<<< HEAD
             try
             {
                 // feedback:
@@ -155,6 +229,18 @@ namespace TodoApp.ViewModel
                 foreach (var model in models)
                 {
                     TodoList.Add(new TodoItem(model.IsCompleted, model.TodoContent));
+=======
+            TodoCollection loaded;
+
+            try
+            {
+                loaded = await JsonServiceManager.Instance.LoadAsync(path);
+
+                TodoList.Clear();
+                foreach (var item in loaded)
+                {
+                    TodoList.Add(item);
+>>>>>>> Assignment3
                 }
 
                 StatusMessage = "불러오기 완료!";
@@ -165,7 +251,11 @@ namespace TodoApp.ViewModel
             }
         }
 
+<<<<<<< HEAD
         public RelayCommandAsync LoadSampleCommand { get; private set; }
+=======
+        public RelayCommandAsync LoadSampleCommand { get; }
+>>>>>>> Assignment3
 
         private async Task OnLoadSample(object parameter)
         {
@@ -174,9 +264,15 @@ namespace TodoApp.ViewModel
                 IsBusy = true;
                 StatusMessage = "서버에서 가져오는 중...";
 
+<<<<<<< HEAD
                 var models = await HttpClientManager.Instance.GetSampleAsync();
 
                 if (models == null)
+=======
+                TodoCollection loaded = await HttpClientManager.Instance.GetSampleAsync();
+
+                if (loaded == null)
+>>>>>>> Assignment3
                 {
                     StatusMessage = "Json 파싱 실패";
                     return;
@@ -184,9 +280,15 @@ namespace TodoApp.ViewModel
 
                 TodoList.Clear();
 
+<<<<<<< HEAD
                 foreach (var model in models)
                 {
                     TodoList.Add(new TodoItem(model.IsCompleted, model.TodoContent));
+=======
+                foreach (var item in loaded)
+                {
+                    TodoList.Add(item);
+>>>>>>> Assignment3
                 }
 
                 StatusMessage = "5건 추가 완료";
@@ -227,7 +329,11 @@ namespace TodoApp.ViewModel
             }
             catch (Exception ex)
             {
+<<<<<<< HEAD
                 StatusMessage = $"네트워크 오류 : {ex.Message}"; // 빈칸 X
+=======
+                StatusMessage = $"네트워크 오류 : {ex.Message}";
+>>>>>>> Assignment3
             }
             finally
             {
@@ -275,6 +381,7 @@ namespace TodoApp.ViewModel
             return openFileDialog.FileName;
         }
 
+<<<<<<< HEAD
 >>>>>>> Stashed changes
         #endregion
 
@@ -291,6 +398,8 @@ namespace TodoApp.ViewModel
             LoadSampleCommand = new RelayCommandAsync(OnLoadSample);
         }
 
+=======
+>>>>>>> Assignment3
         #endregion
     }
 }

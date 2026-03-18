@@ -87,7 +87,15 @@ namespace TodoApp.Helper
 
             item.PropertyChanged -= OnItemPropertyChanged;
             item.PropertyChanged += OnItemPropertyChanged;
+<<<<<<< HEAD
 <<<<<<< Updated upstream
+=======
+
+            if (item.IsCompleted)
+            {
+                ++CompletedCount;
+            }
+>>>>>>> Assignment3
         }
 
         private void OnItemPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -102,8 +110,10 @@ namespace TodoApp.Helper
                     }
                     else
                     {
-                        if (CompletedCount > 0) 
+                        if (CompletedCount > 0)
+                        {
                             --CompletedCount;
+                        }
                     }
                 }
             }
@@ -125,16 +135,21 @@ namespace TodoApp.Helper
             var itemToRemove = this[index];
 
             itemToRemove.PropertyChanged -= OnItemPropertyChanged;
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
 
             --TotalCount;
 
 >>>>>>> Stashed changes
+=======
+            
+>>>>>>> Assignment3
             if (itemToRemove.IsCompleted && (CompletedCount > 0))
             {
                 --CompletedCount;
             }
+<<<<<<< HEAD
 <<<<<<< Updated upstream
             base.RemoveItem(index);
         }
@@ -145,6 +160,12 @@ namespace TodoApp.Helper
         }
 
 
+=======
+            
+            base.RemoveItem(index);
+        }
+
+>>>>>>> Assignment3
         protected override void ClearItems()
         {
             foreach (var item in this)
@@ -155,10 +176,15 @@ namespace TodoApp.Helper
             base.ClearItems();
 
             CompletedCount = 0;
+<<<<<<< HEAD
             TotalCount = 0;
         }
 
 >>>>>>> Stashed changes
+=======
+        }
+
+>>>>>>> Assignment3
         protected bool SetProperty<T>(ref T member, T value, [CallerMemberName] string propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(member, value))

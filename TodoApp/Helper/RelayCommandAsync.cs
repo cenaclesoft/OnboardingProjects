@@ -1,4 +1,10 @@
 ﻿using System;
+<<<<<<< HEAD
+=======
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+>>>>>>> Assignment3
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -20,7 +26,11 @@ namespace TodoApp.Helper
 
         public event EventHandler CanExecuteChanged;
 
+<<<<<<< HEAD
         private void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty); // 함수위치
+=======
+        private void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+>>>>>>> Assignment3
 
         public bool CanExecute(object parameter)
         {
