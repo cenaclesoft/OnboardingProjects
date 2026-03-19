@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Win32;
@@ -17,6 +18,8 @@ namespace TodoApp.ViewModel
             TodoList = new TodoCollection();
 
             InitializeCommands();
+
+            PropertyChanged += OnOwnPropertyChanged;
         }
 
         #endregion
@@ -50,11 +53,7 @@ namespace TodoApp.ViewModel
         public string TodoInput
         {
             get => _todoInput;
-            set
-            {
-                SetProperty<string>(ref _todoInput, value);
-                AddTodoCommand.RaiseCanExecuteChanged();
-            }
+            set => SetProperty<string>(ref _todoInput, value);
         }
 
         private bool _isBusy;
@@ -228,6 +227,16 @@ namespace TodoApp.ViewModel
             StatusMessage = "불러오는 중...";
 
             return openFileDialog.FileName;
+        }
+
+        private void OnOwnPropertyChanged(object sender, PropertyChangedEventArgs e) // Setter와 Raise 분리
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(TodoInput):
+                    AddTodoCommand.RaiseCanExecuteChanged();
+                    break;
+            }
         }
 
         #endregion
