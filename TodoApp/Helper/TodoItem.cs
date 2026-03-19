@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using TodoApp.Data;
 
 namespace TodoApp.ViewModel
 {
@@ -10,15 +10,19 @@ namespace TodoApp.ViewModel
             _todoContent = todoContent;
         }
 
-        public TodoItem(bool isCompleted, string todoContent)
+        public TodoItem(TodoItemModel model)
         {
-            _isCompleted = isCompleted;
-            _todoContent = todoContent;
+            _isCompleted = model.IsCompleted;
+            _todoContent = model.TodoContent;
+        }
+
+        public TodoItemModel ToModel()
+        {
+            return new TodoItemModel(IsCompleted, TodoContent);
         }
 
         private bool _isCompleted;
 
-        [JsonProperty("completed")]
         public bool IsCompleted
         {
             get => _isCompleted;
@@ -27,7 +31,6 @@ namespace TodoApp.ViewModel
 
         private string _todoContent;
 
-        [JsonProperty("title")]
         public string TodoContent
         {
             get => _todoContent;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -25,18 +24,30 @@ namespace TodoApp.Business
         private HttpClient _httpClient;
 
 
-        public async Task<IEnumerable<TodoItemModel>> GetSampleAsync()
+        public async Task<IEnumerable<TodoItemModel>> GetSampleAsync(Uri uri)
         {
-            var uri = new Uri("https://jsonplaceholder.typicode.com/todos?_limit=5");
+            return await Task.Run(async () =>
+            {
+                var response = await _httpClient.GetAsync(uri);
 
-            var response = await _httpClient.GetAsync(uri);
-            response.EnsureSuccessStatusCode();
+                if (response.IsSuccessStatusCode == false)
+                {
+                    throw new HttpRequestException($"서버 응답 오류: {(int)response.StatusCode} {response.ReasonPhrase}");
+                }
 
-            var json = await response.Content.ReadAsStringAsync();
+                var json = await response.Content.ReadAsStringAsync();
 
-            var dtos = await Task.Run(() => JsonConvert.DeserializeObject<List<TodoItemDto>>(json));
+                var dtos = JsonConvert.DeserializeObject<IEnumerable<TodoItemDto>>(json);
 
-            return dtos.Select(dto => TodoItemModel.From(dto));
+                var models = new List<TodoItemModel>();
+
+                foreach (var dto in dtos)
+                {
+                    models.Add(TodoItemModel.From(dto));
+                }
+
+                return models;
+            });
         }
     }
 }

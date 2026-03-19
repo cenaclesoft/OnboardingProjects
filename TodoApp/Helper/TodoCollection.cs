@@ -21,6 +21,7 @@ namespace TodoApp.Helper
             CompletedCount = 0;
             TotalCount = Count;
         }
+
         #endregion
 
 

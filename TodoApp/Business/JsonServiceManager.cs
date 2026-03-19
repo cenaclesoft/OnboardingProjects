@@ -20,27 +20,34 @@ namespace TodoApp.Business
 
         public async Task SaveAsync(string path, IEnumerable<TodoItemModel> models)
         {
-            var todoItemDtos = models.Select(model => model.ToDto());
-
-            string json = await Task.Run(() => JsonConvert.SerializeObject(todoItemDtos));
-
-            await WriteAsync(path, json);
-
-            await Task.Delay(2000);
+            await Task.Run(async () =>
+            {
+                var todoItemDtos = models.Select(model => model.ToDto());
+                string json = JsonConvert.SerializeObject(todoItemDtos);
+                await WriteAsync(path, json);
+                await Task.Delay(2000);
+            });
         }
+
+        public async Task<IEnumerable<TodoItemModel>> LoadAsync(string path)
+        {
+            var dtos = await Task.Run(() =>
+            {
+                string json = File.ReadAllText(path);
+                return JsonConvert.DeserializeObject<List<TodoItemDto>>(json);
+            });
+
+            return dtos.Select(dto => TodoItemModel.From(dto));
+        }
+
+
+        #region Helpers
 
         private async Task WriteAsync(string path, string json)
         {
             await Task.Run(() => File.WriteAllText(path, json));
         }
 
-        public async Task<IEnumerable<TodoItemModel>> LoadAsync(string path)
-        {
-            string json = await Task.Run(() => File.ReadAllText(path));
-
-            var todoItemDtos = await Task.Run(() => JsonConvert.DeserializeObject<List<TodoItemDto>>(json));
-
-            return todoItemDtos.Select(dto => TodoItemModel.From(dto));
-        }
+        #endregion
     }
 }

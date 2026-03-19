@@ -5,19 +5,12 @@ namespace TodoApp.Helper
 {
     public class RelayCommand : ICommand
     {
-        private readonly Action _execute;
-        private readonly Action<object> _executeWithParam;
+        private readonly Action<object> _execute;
         private readonly Predicate<object> _canExecute;
-
-        public RelayCommand(Action execute, Predicate<object> canExecute = null)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
 
         public RelayCommand(Action<object> execute, Predicate<object> canExecute = null)
         {
-            _executeWithParam = execute ?? throw new ArgumentNullException(nameof(execute));
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
         }
 
@@ -30,8 +23,7 @@ namespace TodoApp.Helper
 
         public void Execute(object parameter)
         {
-            _execute?.Invoke();
-            _executeWithParam?.Invoke(parameter);
+            _execute?.Invoke(parameter);
         }
 
         public void RaiseCanExecuteChanged()

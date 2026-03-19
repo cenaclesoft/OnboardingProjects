@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 using TodoApp.Business;
 using TodoApp.Data;
 using TodoApp.Helper;
@@ -18,8 +20,6 @@ namespace TodoApp.ViewModel
             TodoList = new TodoCollection();
 
             InitializeCommands();
-
-            PropertyChanged += OnOwnPropertyChanged;
         }
 
         #endregion
@@ -71,13 +71,13 @@ namespace TodoApp.ViewModel
 
         public RelayCommand AddTodoCommand { get; private set; }
 
-        private void OnAddTodo()
+        private void OnAddTodo(object obj)
         {
             TodoList.Add(new TodoItem(TodoInput));
             TodoInput = string.Empty;
         }
 
-        private bool CanAddTodo()
+        private bool CanAddTodo(object obj)
         {
             if (string.IsNullOrWhiteSpace(TodoInput)) return false;
             return true;
@@ -107,7 +107,12 @@ namespace TodoApp.ViewModel
 
             try
             {
-                var models = TodoList.Select(item => new TodoItemModel(item.IsCompleted, item.TodoContent));
+                var models = new List<TodoItemModel>();
+
+                foreach (var item in TodoList)
+                {
+                    models.Add(item.ToModel());
+                }
 
                 await JsonServiceManager.Instance.SaveAsync(path, models);
 
@@ -142,7 +147,7 @@ namespace TodoApp.ViewModel
 
                 foreach (var model in models)
                 {
-                    TodoList.Add(new TodoItem(model.IsCompleted, model.TodoContent));
+                    TodoList.Add(new TodoItem(model));
                 }
 
                 StatusMessage = "불러오기 완료!";
@@ -162,26 +167,33 @@ namespace TodoApp.ViewModel
                 IsBusy = true;
                 StatusMessage = "서버에서 가져오는 중...";
 
-                var models = await HttpClientManager.Instance.GetSampleAsync();
+                var uri = new Uri("https://jsonplaceholder.typicode.com/todos?_limit=5");
 
-                if (models == null)
-                {
-                    StatusMessage = "Json 파싱 실패";
-                    return;
-                }
+                var models = await HttpClientManager.Instance.GetSampleAsync(uri);
 
                 TodoList.Clear();
 
+                int count = 0;
+
                 foreach (var model in models)
                 {
-                    TodoList.Add(new TodoItem(model.IsCompleted, model.TodoContent));
+                    TodoList.Add(new TodoItem(model));
+                    count++;
                 }
 
-                StatusMessage = "5건 추가 완료";
+                StatusMessage = $"{count}건 추가 완료";
+            }
+            catch (HttpRequestException ex)
+            {
+                StatusMessage = $"네트워크 오류 : {ex.Message}";
+            }
+            catch (JsonException ex)
+            {
+                StatusMessage = $"Json 파싱 실패 : {ex.Message}";
             }
             catch (Exception ex)
             {
-                StatusMessage = $"네트워크 오류 : {ex.Message}";
+                StatusMessage = $"알 수 없는 오류 : {ex.Message}";
             }
             finally
             {
@@ -246,7 +258,9 @@ namespace TodoApp.ViewModel
 
         private void InitializeCommands()
         {
-            AddTodoCommand = new RelayCommand(OnAddTodo, _ => CanAddTodo());
+            PropertyChanged += OnOwnPropertyChanged;
+
+            AddTodoCommand = new RelayCommand(OnAddTodo, CanAddTodo);
             DeleteTodoCommand = new RelayCommand(OnDeleteTodo);
             SaveOnJsonCommand = new RelayCommandAsync(OnSaveOnJson);
             LoadCommand = new RelayCommandAsync(OnLoad);

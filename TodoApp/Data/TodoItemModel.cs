@@ -1,14 +1,22 @@
 using System;
+using System.Threading;
 
 namespace TodoApp.Data
 {
     public class TodoItemModel
     {
+        private static int _nextId;
+        private const int DefaultUserId = 1;
+
+        public int UserId { get; }
+        public int Id { get; }
         public bool IsCompleted { get; }
         public string TodoContent { get; }
 
         public TodoItemModel(bool isCompleted, string todoContent)
         {
+            Id = Interlocked.Increment(ref _nextId);
+            UserId = DefaultUserId;
             IsCompleted = isCompleted;
             TodoContent = todoContent;
         }
@@ -30,6 +38,8 @@ namespace TodoApp.Data
         {
             return new TodoItemDto
             {
+                UserId = UserId,
+                Id = Id,
                 Completed = IsCompleted,
                 Title = TodoContent
             };
